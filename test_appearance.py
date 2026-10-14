@@ -55,6 +55,10 @@ class AppearanceTests(unittest.TestCase):
         app = gui.InstallerApp(smoke_dir=self.temp.name)
         events = []
         app.event = events.append
+        # Establish an explicit dark baseline first. Without it the light step is a
+        # no-op on a host that already resolves to light (headless CI runners), so
+        # no notify::dark signal fires and the light event never appears.
+        app.style_manager.set_color_scheme(gui.Adw.ColorScheme.FORCE_DARK)
         app.style_manager.set_color_scheme(gui.Adw.ColorScheme.FORCE_LIGHT)
         app.style_manager.set_color_scheme(gui.Adw.ColorScheme.FORCE_DARK)
         appearance_events = [e for e in events if e.get('type') == 'appearance']
