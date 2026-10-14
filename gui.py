@@ -558,7 +558,7 @@ class InstallerApp(Gtk.Application):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="本地 DEB 安装器图形界面")
+    parser = argparse.ArgumentParser(description="Debloom graphical installer")
     parser.add_argument("--smoke-test", metavar="OUTPUT_DIR", help=argparse.SUPPRESS)
     parser.add_argument("--smoke-width", type=int, choices=(800,1040), default=1040, help=argparse.SUPPRESS)
     parser.add_argument("files", nargs="*")

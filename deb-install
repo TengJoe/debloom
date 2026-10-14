@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 本地 DEB 安装器。普通用户运行；仅 APT 安装阶段通过 sudo 提权。
+# Debloom。普通用户运行；仅 APT 安装阶段通过 sudo 提权。
 set -Eeuo pipefail
 umask 077
 
@@ -11,7 +11,7 @@ declare -a files=() staged=()
 
 usage() {
     cat <<'EOF'
-本地 DEB 安装器
+Debloom
 
 用法：
   deb-install                         打开文件选择器
@@ -89,7 +89,7 @@ if (( ! check_only )); then
     [[ -t 0 ]] || fail '安装需要交互终端，请从应用菜单打开安装器，或在终端运行。'
 fi
 
-printf '本地 DEB 安装器\n\n'
+printf 'Debloom\n\n'
 stage_dir=$(mktemp -d /tmp/local-deb-install.XXXXXXXXXX)
 index=0
 for file in "${files[@]}"; do
