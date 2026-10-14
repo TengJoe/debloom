@@ -1,0 +1,137 @@
+#!/usr/bin/env bash
+# 本地 DEB 安装器。普通用户运行；仅 APT 安装阶段通过 sudo 提权。
+set -Eeuo pipefail
+umask 077
+
+desktop=0
+check_only=0
+pause_on_exit=0
+stage_dir=''
+declare -a files=() staged=()
+
+usage() {
+    cat <<'EOF'
+本地 DEB 安装器
+
+用法：
+  deb-install                         打开文件选择器
+  deb-install 文件.deb [其他文件.deb]  安装一个或多个本地包
+  deb-install --check 文件.deb         仅检查包和模拟安装，无需 sudo
+  deb-install -- 文件.deb              文件名以短横线开头时使用
+
+会保留原文件，自动准备 _apt 可读取的临时副本，并在结束时清理。
+安装使用 sudo apt-get --no-remove install，保留 APT 的交互确认。
+EOF
+}
+
+cleanup() {
+    local status=$?
+    trap - EXIT
+    if [[ -n $stage_dir && -d $stage_dir ]]; then
+        if ! rm -rf -- "$stage_dir"; then
+            printf '\n临时副本未能清理，请检查：%q\n' "$stage_dir" >&2
+            if (( status == 0 )); then status=1; fi
+        fi
+    fi
+    if (( desktop && pause_on_exit )) && [[ -t 0 ]]; then
+        printf '\n按回车关闭窗口……'
+        IFS= read -r _ || true
+    fi
+    exit "$status"
+}
+
+fail() {
+    printf '\n错误：%s\n' "$*" >&2
+    exit 1
+}
+
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
+
+while (( $# )); do
+    case $1 in
+        --desktop) desktop=1 ;;
+        --check) check_only=1 ;;
+        -h|--help) usage; exit 0 ;;
+        --) shift; files+=("$@"); break ;;
+        -*) fail "未知选项：$1（路径以 - 开头时，请在路径前加 --）" ;;
+        *) files+=("$1") ;;
+    esac
+    shift
+done
+
+if (( ${#files[@]} == 0 )); then
+    if [[ -z ${DISPLAY:-} && -z ${WAYLAND_DISPLAY:-} ]]; then
+        usage
+        fail '请提供本地 .deb 文件路径。'
+    fi
+    command -v zenity >/dev/null || fail '缺少文件选择器 zenity。'
+    download_dir=$(xdg-user-dir DOWNLOAD 2>/dev/null || printf '%s/下载' "$HOME")
+    if selected=$(zenity --file-selection --title='选择要安装的 DEB 软件包' \
+        --filename="$download_dir/" --file-filter='DEB 软件包 | *.deb *.DEB'); then
+        [[ -n $selected ]] || exit 0
+        files+=("$selected")
+    else
+        picker_status=$?
+        if (( picker_status == 1 )); then exit 0; fi
+        fail "文件选择器启动失败（退出码 $picker_status）。"
+    fi
+fi
+
+pause_on_exit=1
+for tool in dpkg-deb apt-get mktemp cp chmod rm; do
+    command -v "$tool" >/dev/null || fail "缺少命令：$tool"
+done
+if (( ! check_only )); then
+    command -v sudo >/dev/null || fail '缺少 sudo。'
+    [[ -t 0 ]] || fail '安装需要交互终端，请从应用菜单打开安装器，或在终端运行。'
+fi
+
+printf '本地 DEB 安装器\n\n'
+stage_dir=$(mktemp -d /tmp/local-deb-install.XXXXXXXXXX)
+index=0
+for file in "${files[@]}"; do
+    [[ -f $file && -r $file ]] || fail "不是可读取的普通文件：$file"
+    case $file in
+        *.[dD][eE][bB]) ;;
+        *) fail "请选择 .deb 文件：$file" ;;
+    esac
+    (( index += 1 ))
+    target="$stage_dir/package-$index.deb"
+    cp -- "$file" "$target"
+    printf '文件：%q\n' "$file"
+    # dpkg-deb 自己展开这些字段，不能由 shell 展开。
+    # shellcheck disable=SC2016
+    if ! dpkg-deb --show --showformat='软件包：${Package}\n版本：${Version}\n架构：${Architecture}\n' "$target"; then
+        fail "不是有效的 DEB 软件包：$file"
+    fi
+    chmod 0644 -- "$target"
+    staged+=("$target")
+    printf '\n'
+done
+# 复制时目录保持私有；全部完成后只开放临时目录供 _apt 读取。
+chmod 0755 -- "$stage_dir"
+
+if (( check_only )); then
+    printf '仅模拟安装，不修改已安装的软件，也不会请求 sudo 密码。\n\n'
+    if apt-get --simulate --no-remove install "${staged[@]}"; then
+        printf '\n检查完成：包可读取，APT 模拟通过。\n'
+    else
+        status=$?
+        printf '\nAPT 模拟失败（退出码 %s），未执行安装。\n' "$status" >&2
+        exit "$status"
+    fi
+else
+    printf '接下来由 sudo 请求密码；APT 会显示安装计划并在需要时要求确认。\n'
+    printf '如果依赖处理需要卸载现有软件，本次安装会中止。\n\n'
+    if sudo -- apt-get --no-remove install "${staged[@]}"; then
+        printf '\nAPT 已成功完成。\n'
+    else
+        status=$?
+        printf '\n安装未成功完成（退出码 %s），请查看上方 APT / sudo 信息。\n' "$status" >&2
+        printf '临时副本会清理；若 APT 已开始修改软件，清理不代表回滚。\n' >&2
+        exit "$status"
+    fi
+fi

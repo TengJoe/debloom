@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debloom</title>
+  <style>
+/* ==========================================================================
+   Design Tokens & Modern Desktop System Palette
+   References:
+   - Emil Kowalski (7 Practical Animation Tips: tactile scale, fast transitions, optimal easing)
+   - Rauno Freiberg (Designing Depth: Z-axis separation, refined micro-borders & ambient shadows)
+   - Paco Coursey (Craft & Command UI: high-density metadata grid, robust text overflow protection)
+   ========================================================================== */
+:root {
+  color-scheme: light;
+
+  /* Surfaces & Canvas */
+  --bg-canvas: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-muted: #e2e8f0;
+  --bg-elevated: #ffffff;
+
+  /* Borders */
+  --border-main: #e2e8f0;
+  --border-subtle: #edeef2;
+  --border-strong: #cbd5e1;
+  --border-focus: #2563eb;
+
+  /* Typography (WCAG AA Compliant >= 4.5:1) */
+  --text-main: #0f172a;        /* 17.85:1 on #ffffff */
+  --text-secondary: #334155;   /* 10.35:1 on #ffffff */
+  --text-muted: #55657e;       /* 5.92:1 on #ffffff, 5.4:1 on #f1f5f9 */
+
+  /* Brand Accent */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --accent-active: #1e40af;
+  --accent-subtle: #eff6ff;
+  --accent-border: #bfdbfe;
+  --accent-text: #1d4ed8;
+
+  /* Buttons */
+  --btn-primary-bg: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --btn-primary-active: #1e40af;
+  --btn-primary-text: #ffffff;  /* 5.17:1 on #2563eb */
+
+  --btn-secondary-bg: #ffffff;
+  --btn-secondary-border: #cbd5e1;
+  --btn-secondary-hover: #f8fafc;
+  --btn-secondary-active: #f1f5f9;
+  --btn-secondary-text: #0f172a;
+
+  /* Status Signals */
+  --success-bg: #ecfdf5;
+  --success-border: #a7f3d0;
+  --success-text: #065f46;
+
+  --warning-bg: #fffbeb;
+  --warning-border: #fde68a;
+  --warning-text: #92400e;
+
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --error-text: #991b1b;
+
+  --info-bg: #eff6ff;
+  --info-border: #bfdbfe;
+  --info-text: #1e40af;
+
+  /* Code & Plan Terminal Box */
+  --code-bg: #f8fafc;
+  --code-fg: #0f172a;
+  --code-border: #e2e8f0;
+  --log-bg: #090d16;
+  --log-fg: #f1f5f9;
+
+  /* Installed Badges */
+  --badge-installed-bg: #fef3c7;
+  --badge-installed-border: #fde68a;
+  --badge-installed-text: #854d0e;
+
+  /* Elevation Shadows */
+  --card-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  --elevated-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.05), 0 2px 4px -2px rgba(15, 23, 42, 0.03);
+
+  /* Radius */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-full: 9999px;
+
+  /* Typography Family */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", "PingFang SC", "Noto Sans CJK SC", "Noto Sans", sans-serif;
+  --font-mono: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Cascadia Code", "Courier New", monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces & Canvas */
+  --bg-canvas: #0b0e14;
+  --bg-card: #131720;
+  --bg-subtle: #1a202c;
+  --bg-muted: #242c3d;
+  --bg-elevated: #171d28;
+
+  /* Borders */
+  --border-main: #232b3a;
+  --border-subtle: #1a202c;
+  --border-strong: #333e52;
+  --border-focus: #3b82f6;
+
+  /* Typography (WCAG AA Compliant >= 4.5:1) */
+  --text-main: #f8fafc;        /* 17.14:1 on #131720 */
+  --text-secondary: #cbd5e1;   /* 12.08:1 on #131720 */
+  --text-muted: #8e9bb0;       /* 6.37:1 on #131720, 5.8:1 on #1a202c */
+
+  /* Brand Accent */
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
+  --accent-active: #1d4ed8;
+  --accent-subtle: rgba(59, 130, 246, 0.14);
+  --accent-border: rgba(59, 130, 246, 0.32);
+  --accent-text: #93c5fd;
+
+  /* Buttons */
+  --btn-primary-bg: #2563eb;
+  --btn-primary-hover: #1d4ed8;
+  --btn-primary-active: #1e40af;
+  --btn-primary-text: #ffffff;  /* 5.17:1 on #2563eb */
+
+  --btn-secondary-bg: #1a202c;
+  --btn-secondary-border: #2e384d;
+  --btn-secondary-hover: #242c3d;
+  --btn-secondary-active: #2c364b;
+  --btn-secondary-text: #f8fafc;
+
+  /* Status Signals */
+  --success-bg: rgba(16, 185, 129, 0.12);
+  --success-border: rgba(52, 211, 153, 0.28);
+  --success-text: #6ee7b7;
+
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(251, 191, 36, 0.28);
+  --warning-text: #fcd34d;
+
+  --error-bg: rgba(239, 68, 68, 0.12);
+  --error-border: rgba(248, 113, 113, 0.28);
+  --error-text: #fca5a5;
+
+  --info-bg: rgba(59, 130, 246, 0.12);
+  --info-border: rgba(96, 165, 250, 0.28);
+  --info-text: #93c5fd;
+
+  /* Code & Plan Terminal Box */
+  --code-bg: #07090e;
+  --code-fg: #f1f5f9;
+  --code-border: #1a202c;
+  --log-bg: #05070a;
+  --log-fg: #f1f5f9;
+
+  /* Installed Badges */
+  --badge-installed-bg: rgba(245, 158, 11, 0.16);
+  --badge-installed-border: rgba(245, 158, 11, 0.32);
+  --badge-installed-text: #fcd34d;
+
+  /* Elevation Shadows */
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --elevated-shadow: 0 4px 8px -1px rgba(0, 0, 0, 0.45), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Base Layout & Resets
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  min-width: 800px;
+  min-height: 640px;
+  background-color: var(--bg-canvas);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow: hidden;
+  user-select: none;
+}
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
+  background-color: var(--bg-canvas);
+}
+
+/* ==========================================================================
+   Header & Desktop Navigation Bar
+   ========================================================================== */
+.app-header {
+  flex-shrink: 0;
+  background-color: var(--bg-card);
+  border-bottom: 1px solid var(--border-main);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  z-index: 10;
+}
+
+.app-branding {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 150px;
+}
+
+.app-icon-wrap {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--accent-subtle) 0%, var(--bg-subtle) 100%);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: var(--card-shadow);
+}
+
+.app-title-group h1 {
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--text-main);
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.app-title-group p {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+/* Process Stepper (Pills System) */
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--bg-subtle);
+  padding: 3px 6px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+}
+
+.step-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+
+.step-item .step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--border-main);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.step-item.active {
+  background-color: var(--bg-card);
+  color: var(--accent-text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.step-item.active .step-badge {
+  background-color: var(--btn-primary-bg);
+  color: #ffffff;
+}
+
+.step-item.completed {
+  color: var(--text-secondary);
+}
+
+.step-item.completed .step-badge {
+  background-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.step-item.active.completed {
+  background-color: var(--bg-card);
+  color: var(--success-text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.step-item.active.completed .step-badge {
+  background-color: var(--success-text);
+  color: #ffffff;
+}
+
+.step-separator {
+  color: var(--border-strong);
+  font-size: 10px;
+  user-select: none;
+  padding: 0 1px;
+}
+
+@media (max-width: 900px) { .appearance-label span { display: none; } .app-header { gap: 12px; } }
+
+/* Appearance Selector Control */
+.appearance-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  min-width: 140px;
+}
+
+.appearance-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.appearance-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.appearance-select-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.appearance-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: var(--bg-subtle);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-sm);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 24px 4px 8px;
+  cursor: pointer;
+  line-height: 1.4;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.appearance-select:hover {
+  border-color: var(--accent);
+  background-color: var(--bg-card);
+}
+
+.appearance-select:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.appearance-arrow {
+  position: absolute;
+  right: 7px;
+  pointer-events: none;
+  color: var(--text-muted);
+}
+
+.appearance-feedback {
+  font-size: 11px;
+  color: var(--error-text);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.appearance-feedback:empty {
+  display: none;
+}
+
+/* ==========================================================================
+   Main Content Area (Scrollable Canvas)
+   ========================================================================== */
+.app-body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* Generic Card Treatment */
+.card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Status Feedback Banner */
+.status-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: 13px;
+  line-height: 1.45;
+  transition: opacity 0.2s ease;
+}
+
+.status-banner.hidden {
+  display: none;
+}
+
+.status-info {
+  background-color: var(--info-bg);
+  border-color: var(--info-border);
+  color: var(--info-text);
+}
+
+.status-warning {
+  background-color: var(--warning-bg);
+  border-color: var(--warning-border);
+  color: var(--warning-text);
+}
+
+.status-error {
+  background-color: var(--error-bg);
+  border-color: var(--error-border);
+  color: var(--error-text);
+}
+
+.status-success {
+  background-color: var(--success-bg);
+  border-color: var(--success-border);
+  color: var(--success-text);
+}
+
+.banner-icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.banner-text {
+  flex: 1;
+  word-break: break-word;
+  user-select: text;
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   Empty Dropzone State
+   ========================================================================== */
+.empty-state-card {
+  padding: 44px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1.5px dashed var(--border-strong);
+  background-color: var(--bg-card);
+  border-radius: var(--radius-lg);
+  margin: auto 0;
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.empty-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--bg-subtle) 0%, var(--accent-subtle) 100%);
+  border: 1px solid var(--accent-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  margin-bottom: 16px;
+  box-shadow: var(--elevated-shadow);
+}
+
+.empty-title {
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--text-main);
+  letter-spacing: -0.015em;
+  margin-bottom: 6px;
+}
+
+.empty-desc {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin-bottom: 22px;
+  line-height: 1.55;
+}
+
+.empty-features {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.empty-feature-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.empty-feature-item svg {
+  color: var(--accent);
+}
+
+.empty-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 12px;
+}
+
+/* ==========================================================================
+   Loaded Content View: Package Card & Inspector
+   ========================================================================== */
+.package-card {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.package-card:last-child {
+  border-bottom: none;
+}
+
+.package-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.package-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.package-name {
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--text-main);
+  letter-spacing: -0.01em;
+  user-select: text;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2.5px 8.5px;
+  border-radius: var(--radius-full);
+  font-size: 11.5px;
+  font-weight: 550;
+  line-height: 1.35;
+  user-select: text;
+}
+
+.badge-version {
+  background-color: var(--accent-subtle);
+  color: var(--accent-text);
+  border: 1px solid var(--accent-border);
+}
+
+.badge-arch {
+  background-color: var(--bg-subtle);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-main);
+}
+
+.badge-installed {
+  background-color: var(--badge-installed-bg);
+  color: var(--badge-installed-text);
+  border: 1px solid var(--badge-installed-border);
+}
+
+/* Metadata Parameters Grid (Fixed 3-column for density & zero layout shift) */
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 8px 12px;
+  background-color: var(--bg-subtle);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-subtle);
+  margin-bottom: 10px;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 550;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.meta-value {
+  font-size: 13px;
+  color: var(--text-main);
+  font-weight: 550;
+  word-break: break-all;
+  user-select: text;
+}
+
+/* Description Block */
+.desc-container {
+  margin-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 8px;
+}
+
+.desc-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.desc-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: text;
+  max-height: 90px;
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   Plan & Detailed Log Terminal Card
+   ========================================================================== */
+.section-title {
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--text-main);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.code-box {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background-color: var(--code-bg);
+  color: var(--code-fg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-y: auto;
+  user-select: text;
+}
+
+.plan-box {
+  min-height: 80px;
+  max-height: 150px;
+}
+
+.placeholder-text {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Collapsible Detailed Log Console */
+.log-details {
+  margin-top: 10px;
+  border: 1px solid var(--border-main);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-card);
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.log-details summary {
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--bg-subtle);
+  border-bottom: 1px solid transparent;
+  outline: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.log-details summary:hover {
+  color: var(--text-main);
+  background-color: var(--bg-muted);
+}
+
+.log-details[open] summary {
+  border-bottom-color: var(--border-main);
+}
+
+.log-details summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.log-box {
+  max-height: 150px;
+  border: none;
+  border-radius: 0;
+  background-color: var(--log-bg);
+  color: var(--log-fg);
+}
+
+/* ==========================================================================
+   Bottom Action Toolbar
+   ========================================================================== */
+.app-toolbar {
+  flex-shrink: 0;
+  background-color: var(--bg-card);
+  border-top: 1px solid var(--border-main);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.02);
+  z-index: 10;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.busy-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+
+.busy-indicator.hidden {
+  display: none;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.install-hint {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-align: right;
+  max-width: 270px;
+  line-height: 1.35;
+}
+
+.install-hint.hidden {
+  display: none;
+}
+
+/* ==========================================================================
+   Buttons (Emil Kowalski Tactile Scale & Easing)
+   ========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 18px;
+  font-size: 13.5px;
+  font-weight: 550;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease, transform 0.1s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  line-height: 1.35;
+  outline: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+}
+
+.btn-primary {
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 1px 2px rgba(37, 99, 235, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--btn-primary-hover);
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.btn-primary:active:not(:disabled) {
+  background-color: var(--btn-primary-active);
+}
+
+.btn-secondary {
+  background-color: var(--btn-secondary-bg);
+  border-color: var(--btn-secondary-border);
+  color: var(--btn-secondary-text);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: var(--btn-secondary-hover);
+  border-color: var(--border-strong);
+}
+
+.btn-secondary:active:not(:disabled) {
+  background-color: var(--btn-secondary-active);
+}
+
+.btn.hidden {
+  display: none !important;
+}
+
+/* Footer Safety Subtext */
+.app-footer {
+  flex-shrink: 0;
+  background-color: var(--bg-canvas);
+  padding: 4px 24px 6px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+
+.settings-trigger { padding: 7px 12px; gap: 7px; }
+.settings-dialog { width: 500px; max-width: calc(100vw - 48px); max-height: calc(100vh - 56px); margin: auto; padding: 0; overflow-y: auto; color: var(--text-main); background: var(--bg-card); border: 1px solid var(--border-strong); border-radius: 18px; box-shadow: 0 24px 70px rgba(0,0,0,.35); }
+.settings-dialog::backdrop { background: rgba(3,7,18,.55); }
+.settings-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border-main); }
+.settings-head h2 { font-size: 18px; font-weight: 650; }
+.settings-section { padding: 20px 24px; border-bottom: 1px solid var(--border-subtle); }
+.settings-section h3 { font-size: 12px; color: var(--text-muted); font-weight: 550; margin-bottom: 16px; }
+.settings-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 14px 0; font-size: 14px; }
+.settings-dialog .appearance-select { appearance: auto; -webkit-appearance: auto; min-width: 155px; padding: 7px 10px; font-size: 13px; }
+.settings-dialog .appearance-feedback { max-width: none; white-space: normal; }
+.settings-note { font-size: 12px; line-height: 1.6; color: var(--text-muted); }
+.update-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+#update-status { margin-top: 12px; overflow-wrap: anywhere; }
+.settings-bottom { padding: 14px 24px; }
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-strong);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-muted);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   Responsive Adaptations (800px width support)
+   ========================================================================== */
+@media (max-width: 860px) {
+  .app-header {
+    padding: 10px 16px;
+    gap: 8px;
+  }
+  .app-branding {
+    min-width: 160px;
+  }
+  .app-title-group h1 {
+    font-size: 14px;
+  }
+  .stepper {
+    padding: 2px 4px;
+  }
+  .step-item {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+  .appearance-container {
+    min-width: 110px;
+  }
+  .app-body {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+  .app-toolbar {
+    padding: 10px 16px;
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion Preferences
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    scroll-behavior: auto !important;
+  }
+  .spinner {
+    animation: none;
+    border-top-color: var(--accent);
+    opacity: 0.8;
+  }
+}
+  </style>
+</head>
+<body>
+  <div class="app-root">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="app-branding">
+        <div class="app-icon-wrap" aria-hidden="true">
+          <img width="26" height="26" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8IS0tIFJveWFsIEJsdWUgR3JhZGllbnQgUGxhdGUgKERlYmxvb20gYmx1ZSBwYWxldHRlKSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYlBsYXRlIiB4MT0iMzIiIHkxPSIxNiIgeDI9IjIyNCIgeTI9IjI0MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjM2I4MmY2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMjU2M2ViIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzFkNGVkOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYkJvcmRlciIgeDE9IjMyIiB5MT0iMTYiIHgyPSIyMjQiIHkyPSIyNDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwLjQyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzkzYzVmZCIgc3RvcC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPCEtLSBDcnlzdGFsIERlYmlhbiBWYXVsdCBGYWNldHMgLS0+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNUb3AiIHgxPSI2NCIgeTE9IjQwIiB4Mj0iMTkyIiB5Mj0iMTEyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZTBmMmZlIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjTGVmdCIgeDE9IjQ4IiB5MT0iODAiIHgyPSIxMjgiIHkyPSIyMDgiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzYwYTVmYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzYjgyZjYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNSaWdodCIgeDE9IjEyOCIgeTE9IjgwIiB4Mj0iMjA4IiB5Mj0iMjA4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzYjgyZjYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMjU2M2ViIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjU3dpcmwiIHgxPSI3MiIgeTE9IjQ4IiB4Mj0iMTg0IiB5Mj0iMTI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzZWIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMWQ0ZWQ4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iY1NoYWRvdyIgeD0iMCIgeT0iMCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI2IiBzdGREZXZpYXRpb249IjgiIGZsb29kLWNvbG9yPSIjMGYxNzJhIiBmbG9vZC1vcGFjaXR5PSIwLjQiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPCEtLSBDb250aW51b3VzLWN1cnZhdHVyZSBjdWJpYyBjb3JuZXJzOiBjb2xsaW5lYXIgZW5kcG9pbnQgY29udHJvbCB2ZWN0b3JzIGdpdmUgemVybyBjdXJ2YXR1cmUgYXQgZWFjaCBzdHJhaWdodC1lZGdlIGpvaW4uIC0tPgogIDxwYXRoIGQ9Ik04MCAxNkgxNzZDMjQwIDE2IDI0MCAxNiAyNDAgODBWMTc2QzI0MCAyNDAgMjQwIDI0MCAxNzYgMjQwSDgwQzE2IDI0MCAxNiAyNDAgMTYgMTc2VjgwQzE2IDE2IDE2IDE2IDgwIDE2WiIgZmlsbD0idXJsKCNiUGxhdGUpIi8+CiAgPHBhdGggZD0iTTgwIDE2SDE3NkMyNDAgMTYgMjQwIDE2IDI0MCA4MFYxNzZDMjQwIDI0MCAyNDAgMjQwIDE3NiAyNDBIODBDMTYgMjQwIDE2IDI0MCAxNiAxNzZWODBDMTYgMTYgMTYgMTYgODAgMTZaIiBzdHJva2U9InVybCgjYkJvcmRlcikiIHN0cm9rZS13aWR0aD0iMiIvPgoKICA8IS0tIFRvcCBHbGFzcyBTaGVlbiAtLT4KCgogIDwhLS0gRmxvYXRpbmcgQ3J5c3RhbCBEZWJpYW4gVmF1bHQgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI2NTaGFkb3cpIj4KICAgIDwhLS0gTGVmdCBGYWNldCAtLT4KICAgIDxwYXRoIGQ9Ik01MCA4My4yTDEyNCAxMjZWMjA0LjhDMTI0IDIwOS4yIDExOS4yIDIxMiAxMTUuMiAyMDkuNkw1Mi44IDE3My42QzUwIDE3MiA0OCAxNjguOCA0OCAxNjUuNlY4OC44QzQ4IDg0LjQgNDYgODAuOCA1MCA4My4yWiIgZmlsbD0idXJsKCNjTGVmdCkiLz4KCiAgICA8IS0tIFJpZ2h0IEZhY2V0IC0tPgogICAgPHBhdGggZD0iTTIwNiA4My4yTDEzMiAxMjZWMjA0LjhDMTMyIDIwOS4yIDEzNi44IDIxMiAxNDAuOCAyMDkuNkwyMDMuMiAxNzMuNkMyMDYgMTcyIDIwOCAxNjguOCAyMDggMTY1LjZWODguOEMyMDggODQuNCAyMTAgODAuOCAyMDYgODMuMloiIGZpbGw9InVybCgjY1JpZ2h0KSIvPgoKICAgIDwhLS0gVG9wIExpZCBGYWNldCAtLT4KICAgIDxwYXRoIGQ9Ik0xMjIuNCAzNEMxMjYgMzIgMTMwIDMyIDEzMy42IDM0TDE5OS4yIDcyQzIwMy4yIDc0LjQgMjAzLjIgODAgMTk5LjIgODIuNEwxMzMuNiAxMjAuNEMxMzAgMTIyLjQgMTI2IDEyMi40IDEyMi40IDEyMC40TDU2LjggODIuNEM1Mi44IDgwIDUyLjggNzQuNCA1Ni44IDcyTDEyMi40IDM0WiIgZmlsbD0idXJsKCNjVG9wKSIvPgoKICAgIDwhLS0gSW5uZXIgSGlnaGxpZ2h0cyAtLT4KICAgIDxwYXRoIGQ9Ik0xMjggMzZMMTk2IDc2TDEyOCAxMTZMNjAgNzZMMTI4IDM2WiIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC42IiBzdHJva2Utd2lkdGg9IjEuOCIgZmlsbD0ibm9uZSIvPgogICAgPGxpbmUgeDE9IjEyOCIgeTE9IjEyMCIgeDI9IjEyOCIgeTI9IjIwNCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC40IiBzdHJva2Utd2lkdGg9IjEuOCIvPgoKICAgIDwhLS0gRGViaWFuIFN3aXJsIEFyYyAtLT4KICAgIDxwYXRoIGQ9Ik05MiA2MEMxMDggNDQgMTQ2IDQ0IDE2NiA2NEMxODAgNzggMTc0IDk4IDE1NCAxMDJDMTM4IDEwNC44IDEyNiA5NCAxMzAgODJDMTMyLjggNzQgMTQyIDcyIDE0OCA3Ni44IgogICAgICAgICAgc3Ryb2tlPSJ1cmwoI2NTd2lybCkiIHN0cm9rZS13aWR0aD0iOS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KCiAgICA8IS0tIENlbnRyYWwgUHJlY2lzaW9uIERvd253YXJkIEFycm93IC0tPgogICAgPHBhdGggZD0iTTEyOCA4OFYxNjBNMTI4IDE2MEwxMDIgMTM0TTEyOCAxNjBMMTU0IDEzNCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgoKCiAgICA8IS0tIE1vdW50aW5nIEJhc2VsaW5lIE5vdGNoIC0tPgogICAgPHBhdGggZD0iTTk2IDE5MEwxMjggMjA4TDE2MCAxOTAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI3LjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNCA4Ii8+CiAgPC9nPgo8L3N2Zz4K" alt="">
+        </div>
+        <div class="app-title-group">
+          <h1>Debloom</h1>
+          <p>选择软件包，检查后安装</p>
+        </div>
+      </div>
+
+      <nav class="stepper" aria-label="安装流程">
+        <div id="step-1" class="step-item active">
+          <span class="step-badge">1</span>
+          <span>选择软件包</span>
+        </div>
+        <span class="step-separator" aria-hidden="true">→</span>
+        <div id="step-2" class="step-item">
+          <span class="step-badge">2</span>
+          <span>检查安装计划</span>
+        </div>
+        <span class="step-separator" aria-hidden="true">→</span>
+        <div id="step-3" class="step-item">
+          <span class="step-badge">3</span>
+          <span>安装完成</span>
+        </div>
+      </nav>
+
+      <button id="btn-settings" type="button" class="btn btn-secondary settings-trigger" aria-label="设置" title="设置">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.93 4.93l2.12 2.12m9.9 9.9 2.12 2.12M4.93 19.07l2.12-2.12m9.9-9.9 2.12-2.12"/></svg>
+        <span>设置</span>
+      </button>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="app-body">
+      <!-- Status Live Banner -->
+      <div id="status-banner" class="status-banner hidden" role="status" aria-live="polite">
+        <span id="banner-icon-container" class="banner-icon" aria-hidden="true">
+          <svg id="banner-svg-info" class="banner-svg hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <svg id="banner-svg-warning" class="banner-svg hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <svg id="banner-svg-error" class="banner-svg hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="15" y1="9" x2="9" y2="15"></line>
+            <line x1="9" y1="9" x2="15" y2="15"></line>
+          </svg>
+          <svg id="banner-svg-success" class="banner-svg hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </span>
+        <div id="status-banner-text" class="banner-text"></div>
+      </div>
+
+      <!-- View: Empty State -->
+      <section id="view-empty" class="empty-state-card" aria-label="文件选择区域">
+        <div class="empty-icon-wrap" aria-hidden="true">
+          <img width="44" height="44" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8IS0tIFJveWFsIEJsdWUgR3JhZGllbnQgUGxhdGUgKERlYmxvb20gYmx1ZSBwYWxldHRlKSAtLT4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYlBsYXRlIiB4MT0iMzIiIHkxPSIxNiIgeDI9IjIyNCIgeTI9IjI0MCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjM2I4MmY2Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMjU2M2ViIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzFkNGVkOCIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iYkJvcmRlciIgeDE9IjMyIiB5MT0iMTYiIHgyPSIyMjQiIHkyPSIyNDAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2ZmZmZmZiIgc3RvcC1vcGFjaXR5PSIwLjQyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzkzYzVmZCIgc3RvcC1vcGFjaXR5PSIwLjE1Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPCEtLSBDcnlzdGFsIERlYmlhbiBWYXVsdCBGYWNldHMgLS0+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNUb3AiIHgxPSI2NCIgeTE9IjQwIiB4Mj0iMTkyIiB5Mj0iMTEyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNmZmZmZmYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZTBmMmZlIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjTGVmdCIgeDE9IjQ4IiB5MT0iODAiIHgyPSIxMjgiIHkyPSIyMDgiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzYwYTVmYSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiMzYjgyZjYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImNSaWdodCIgeDE9IjEyOCIgeTE9IjgwIiB4Mj0iMjA4IiB5Mj0iMjA4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMzYjgyZjYiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMjU2M2ViIi8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjU3dpcmwiIHgxPSI3MiIgeTE9IjQ4IiB4Mj0iMTg0IiB5Mj0iMTI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMyNTYzZWIiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjMWQ0ZWQ4Ii8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogICAgPGZpbHRlciBpZD0iY1NoYWRvdyIgeD0iMCIgeT0iMCIgd2lkdGg9IjI1NiIgaGVpZ2h0PSIyNTYiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgICAgIDxmZURyb3BTaGFkb3cgZHg9IjAiIGR5PSI2IiBzdGREZXZpYXRpb249IjgiIGZsb29kLWNvbG9yPSIjMGYxNzJhIiBmbG9vZC1vcGFjaXR5PSIwLjQiLz4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KCiAgPCEtLSBDb250aW51b3VzLWN1cnZhdHVyZSBjdWJpYyBjb3JuZXJzOiBjb2xsaW5lYXIgZW5kcG9pbnQgY29udHJvbCB2ZWN0b3JzIGdpdmUgemVybyBjdXJ2YXR1cmUgYXQgZWFjaCBzdHJhaWdodC1lZGdlIGpvaW4uIC0tPgogIDxwYXRoIGQ9Ik04MCAxNkgxNzZDMjQwIDE2IDI0MCAxNiAyNDAgODBWMTc2QzI0MCAyNDAgMjQwIDI0MCAxNzYgMjQwSDgwQzE2IDI0MCAxNiAyNDAgMTYgMTc2VjgwQzE2IDE2IDE2IDE2IDgwIDE2WiIgZmlsbD0idXJsKCNiUGxhdGUpIi8+CiAgPHBhdGggZD0iTTgwIDE2SDE3NkMyNDAgMTYgMjQwIDE2IDI0MCA4MFYxNzZDMjQwIDI0MCAyNDAgMjQwIDE3NiAyNDBIODBDMTYgMjQwIDE2IDI0MCAxNiAxNzZWODBDMTYgMTYgMTYgMTYgODAgMTZaIiBzdHJva2U9InVybCgjYkJvcmRlcikiIHN0cm9rZS13aWR0aD0iMiIvPgoKICA8IS0tIFRvcCBHbGFzcyBTaGVlbiAtLT4KCgogIDwhLS0gRmxvYXRpbmcgQ3J5c3RhbCBEZWJpYW4gVmF1bHQgLS0+CiAgPGcgZmlsdGVyPSJ1cmwoI2NTaGFkb3cpIj4KICAgIDwhLS0gTGVmdCBGYWNldCAtLT4KICAgIDxwYXRoIGQ9Ik01MCA4My4yTDEyNCAxMjZWMjA0LjhDMTI0IDIwOS4yIDExOS4yIDIxMiAxMTUuMiAyMDkuNkw1Mi44IDE3My42QzUwIDE3MiA0OCAxNjguOCA0OCAxNjUuNlY4OC44QzQ4IDg0LjQgNDYgODAuOCA1MCA4My4yWiIgZmlsbD0idXJsKCNjTGVmdCkiLz4KCiAgICA8IS0tIFJpZ2h0IEZhY2V0IC0tPgogICAgPHBhdGggZD0iTTIwNiA4My4yTDEzMiAxMjZWMjA0LjhDMTMyIDIwOS4yIDEzNi44IDIxMiAxNDAuOCAyMDkuNkwyMDMuMiAxNzMuNkMyMDYgMTcyIDIwOCAxNjguOCAyMDggMTY1LjZWODguOEMyMDggODQuNCAyMTAgODAuOCAyMDYgODMuMloiIGZpbGw9InVybCgjY1JpZ2h0KSIvPgoKICAgIDwhLS0gVG9wIExpZCBGYWNldCAtLT4KICAgIDxwYXRoIGQ9Ik0xMjIuNCAzNEMxMjYgMzIgMTMwIDMyIDEzMy42IDM0TDE5OS4yIDcyQzIwMy4yIDc0LjQgMjAzLjIgODAgMTk5LjIgODIuNEwxMzMuNiAxMjAuNEMxMzAgMTIyLjQgMTI2IDEyMi40IDEyMi40IDEyMC40TDU2LjggODIuNEM1Mi44IDgwIDUyLjggNzQuNCA1Ni44IDcyTDEyMi40IDM0WiIgZmlsbD0idXJsKCNjVG9wKSIvPgoKICAgIDwhLS0gSW5uZXIgSGlnaGxpZ2h0cyAtLT4KICAgIDxwYXRoIGQ9Ik0xMjggMzZMMTk2IDc2TDEyOCAxMTZMNjAgNzZMMTI4IDM2WiIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC42IiBzdHJva2Utd2lkdGg9IjEuOCIgZmlsbD0ibm9uZSIvPgogICAgPGxpbmUgeDE9IjEyOCIgeTE9IjEyMCIgeDI9IjEyOCIgeTI9IjIwNCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utb3BhY2l0eT0iMC40IiBzdHJva2Utd2lkdGg9IjEuOCIvPgoKICAgIDwhLS0gRGViaWFuIFN3aXJsIEFyYyAtLT4KICAgIDxwYXRoIGQ9Ik05MiA2MEMxMDggNDQgMTQ2IDQ0IDE2NiA2NEMxODAgNzggMTc0IDk4IDE1NCAxMDJDMTM4IDEwNC44IDEyNiA5NCAxMzAgODJDMTMyLjggNzQgMTQyIDcyIDE0OCA3Ni44IgogICAgICAgICAgc3Ryb2tlPSJ1cmwoI2NTd2lybCkiIHN0cm9rZS13aWR0aD0iOS42IiBzdHJva2UtbGluZWNhcD0icm91bmQiIGZpbGw9Im5vbmUiLz4KCiAgICA8IS0tIENlbnRyYWwgUHJlY2lzaW9uIERvd253YXJkIEFycm93IC0tPgogICAgPHBhdGggZD0iTTEyOCA4OFYxNjBNMTI4IDE2MEwxMDIgMTM0TTEyOCAxNjBMMTU0IDEzNCIgc3Ryb2tlPSIjZmZmZmZmIiBzdHJva2Utd2lkdGg9IjEyLjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgoKCiAgICA8IS0tIE1vdW50aW5nIEJhc2VsaW5lIE5vdGNoIC0tPgogICAgPHBhdGggZD0iTTk2IDE5MEwxMjggMjA4TDE2MCAxOTAiIHN0cm9rZT0iI2ZmZmZmZiIgc3Ryb2tlLXdpZHRoPSI3LjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWRhc2hhcnJheT0iNCA4Ii8+CiAgPC9nPgo8L3N2Zz4K" alt="">
+        </div>
+        <h2 class="empty-title">选择或拖入本地 DEB 软件包</h2>
+        <p class="empty-desc">支持 Ubuntu / Debian 原生 .deb 安装包。载入后先查看元数据与已安装状态，再分析 APT 依赖与变更计划。</p>
+        <button id="btn-choose-empty" type="button" class="btn btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          选择 DEB 文件
+        </button>
+        <div class="empty-features">
+          <div class="empty-feature-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <span>APT 模拟预检</span>
+          </div>
+          <div class="empty-feature-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>
+            <span>保留原文件</span>
+          </div>
+          <div class="empty-feature-item">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>系统授权保护</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- View: Loaded Content State -->
+      <div id="view-content" class="hidden" style="display: flex; flex-direction: column; gap: 14px;">
+        <!-- Package Info Card -->
+        <section class="card" aria-label="软件包属性">
+          <div id="packages-container"></div>
+        </section>
+
+        <!-- APT Plan & Logs Card -->
+        <section class="card" style="padding: 16px 18px;" aria-label="依赖与变更计划">
+          <div class="section-title">
+            <div class="section-title-left">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              <span>依赖与安装计划</span>
+            </div>
+          </div>
+          <pre id="plan-output" class="code-box plan-box placeholder-text" aria-live="polite">暂无安装计划。</pre>
+
+          <!-- Collapsible Detailed Log -->
+          <details id="log-details" class="log-details">
+            <summary>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              <span>详细执行日志</span>
+            </summary>
+            <pre id="log-output" class="code-box log-box" aria-live="polite"></pre>
+          </details>
+        </section>
+      </div>
+    </main>
+
+    <!-- Bottom Toolbar -->
+    <footer class="app-toolbar">
+      <div class="toolbar-left">
+        <div id="busy-indicator" class="busy-indicator hidden" role="status" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div>
+          <span id="busy-text">处理中...</span>
+        </div>
+      </div>
+      <div class="toolbar-right">
+        <span id="install-explanation" class="install-hint hidden">将按上方计划安装，随后弹出系统授权窗口</span>
+        <button id="btn-secondary" type="button" class="btn btn-secondary hidden"></button>
+        <button id="btn-primary" type="button" class="btn btn-primary"></button>
+      </div>
+    </footer>
+
+    <div class="app-footer">保留原文件 · 系统授权安装</div>
+  </div>
+
+
+  <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+    <div class="settings-head"><h2 id="settings-title">设置</h2><button id="settings-close" type="button" class="btn btn-secondary" aria-label="关闭设置">×</button></div>
+    <section class="settings-section"><h3>外观与语言</h3>
+      <div class="settings-row"><label for="appearance-select">外观</label><select id="appearance-select" class="appearance-select" aria-label="选择界面外观"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></div>
+      <p id="appearance-feedback" class="appearance-feedback" aria-live="polite"></p>
+      <div class="settings-row"><label for="language-select">语言</label><select id="language-select" class="appearance-select" aria-label="界面语言"><option value="zh">中文</option><option value="en">English</option></select></div>
+      <p id="language-feedback" class="appearance-feedback" aria-live="polite"></p>
+    </section>
+    <section class="settings-section"><h3>版本与更新</h3><div class="settings-row"><span>当前版本</span><code id="app-version">v0.1.0</code></div>
+      <p id="update-status" class="settings-note" role="status" aria-live="polite">从 GitHub 获取最新公开版本信息。</p>
+      <div class="update-actions"><button id="btn-check-updates" type="button" class="btn btn-primary">检查更新</button><button id="btn-open-release" type="button" class="btn btn-secondary hidden">打开发布页</button></div>
+    </section>
+    <div class="settings-bottom settings-note">此设置只影响 Debloom。</div>
+  </dialog>
+
+<!-- BEGIN GENERATED LOCALIZATION -->
+<script>
+(() => {
+  'use strict';
+  const catalog = {"strings": {"\u9009\u62e9\u8f6f\u4ef6\u5305\uff0c\u68c0\u67e5\u540e\u5b89\u88c5": "Choose. Review. Install.", "\u5b89\u88c5\u6d41\u7a0b": "Installation steps", "\u9009\u62e9\u8f6f\u4ef6\u5305": "Choose", "\u68c0\u67e5\u5b89\u88c5\u8ba1\u5212": "Review plan", "\u5b89\u88c5\u5b8c\u6210": "Complete", "\u754c\u9762\u5916\u89c2": "Appearance", "\u5916\u89c2": "Appearance", "\u9009\u62e9\u754c\u9762\u5916\u89c2": "Choose appearance", "\u8ddf\u968f\u7cfb\u7edf": "System", "\u6d45\u8272": "Light", "\u6df1\u8272": "Dark", "\u754c\u9762\u8bed\u8a00": "Interface language", "\u6587\u4ef6\u9009\u62e9\u533a\u57df": "Package selection", "\u9009\u62e9\u6216\u62d6\u5165\u672c\u5730 DEB \u8f6f\u4ef6\u5305": "Drop a DEB. We\u2019ll take it from here.", "\u652f\u6301 Ubuntu / Debian \u539f\u751f .deb \u5b89\u88c5\u5305\u3002\u8f7d\u5165\u540e\u5148\u67e5\u770b\u5143\u6570\u636e\u4e0e\u5df2\u5b89\u88c5\u72b6\u6001\uff0c\u518d\u5206\u6790 APT \u4f9d\u8d56\u4e0e\u53d8\u66f4\u8ba1\u5212\u3002": "Install local Ubuntu and Debian packages. Review package details and the APT plan before authorizing changes.", "\u9009\u62e9 DEB \u6587\u4ef6": "Choose DEB files", "APT \u6a21\u62df\u9884\u68c0": "APT preflight", "\u4fdd\u7559\u539f\u6587\u4ef6": "Originals preserved", "\u7cfb\u7edf\u6388\u6743\u4fdd\u62a4": "System authorization", "\u8f6f\u4ef6\u5305\u5c5e\u6027": "Package details", "\u4f9d\u8d56\u4e0e\u53d8\u66f4\u8ba1\u5212": "Dependencies and changes", "\u4f9d\u8d56\u4e0e\u5b89\u88c5\u8ba1\u5212": "Dependencies & installation plan", "\u6682\u65e0\u5b89\u88c5\u8ba1\u5212\u3002": "No installation plan yet.", "\u8be6\u7ec6\u6267\u884c\u65e5\u5fd7": "Detailed logs", "\u5904\u7406\u4e2d...": "Working\u2026", "\u5c06\u6309\u4e0a\u65b9\u8ba1\u5212\u5b89\u88c5\uff0c\u968f\u540e\u5f39\u51fa\u7cfb\u7edf\u6388\u6743\u7a97\u53e3": "Review the plan. Authorize through the system dialog.", "\u4fdd\u7559\u539f\u6587\u4ef6 \u00b7 \u7cfb\u7edf\u6388\u6743\u5b89\u88c5": "Original files preserved \u00b7 Authorized by your system", "\u8f6f\u4ef6\u5305\u68c0\u67e5\u6216\u5b89\u88c5\u8fc7\u7a0b\u4e2d\u53d1\u751f\u9519\u8bef\uff0c\u8bf7\u67e5\u770b\u4e0b\u65b9\u65e5\u5fd7\u3002": "The operation failed. Check the logs below.", "\u7cfb\u7edf\u6388\u6743\u672a\u5b8c\u6210\uff0c\u8bf7\u67e5\u770b\u65e5\u5fd7\u540e\u91cd\u65b0\u68c0\u67e5\u3002": "Authorization was not completed. Review logs and check again.", "\u8f6f\u4ef6\u5305\u5df2\u6210\u529f\u5b89\u88c5\u81f3\u7cfb\u7edf\u3002": "The packages were installed successfully.", "\u68c0\u67e5\u5b8c\u6210\uff0c\u5f53\u524d\u65e0\u9700\u5b89\u88c5\u53d8\u66f4\u3002": "Review complete. No changes needed.", "\u672a\u77e5\u8f6f\u4ef6\u5305": "Unknown package", "\u5df2\u5b89\u88c5\uff1a": "Installed: ", "\u6587\u4ef6\u540d": "Filename", "\u6587\u4ef6\u5927\u5c0f": "Size", "\u67b6\u6784\u5e73\u53f0": "Architecture", "\u8f6f\u4ef6\u5305\u8bf4\u660e": "Description", "\u6b63\u5728\u5206\u6790 APT \u4f9d\u8d56\u4e0e\u6a21\u62df\u5b89\u88c5\u8ba1\u5212\uff0c\u8bf7\u7a0d\u5019...": "Analyzing dependencies and the APT plan\u2026", "\u5c1a\u672a\u6267\u884c\u68c0\u67e5\u3002\u8bf7\u70b9\u51fb\u4e0b\u65b9\u201c\u68c0\u67e5\u5b89\u88c5\u8ba1\u5212\u201d\u4ee5\u5206\u6790\u4f9d\u8d56\u4e0e\u8ba1\u5212\u53d8\u66f4\u3002": "Review the plan below to check dependencies and changes.", "\u6682\u65e0\u5b89\u88c5\u8ba1\u5212\u8be6\u60c5\u3002": "No installation plan available.", "\u6b63\u5728\u8bfb\u53d6\u8f6f\u4ef6\u5305\u4fe1\u606f...": "Reading package details\u2026", "\u6b63\u5728\u68c0\u67e5 APT \u4f9d\u8d56\u4e0e\u751f\u6210\u8ba1\u5212...": "Checking dependencies and preparing the plan\u2026", "\u7b49\u5f85\u7cfb\u7edf\u6388\u6743\u7a97\u53e3\u786e\u8ba4...": "Waiting for system authorization\u2026", "\u6b63\u5728\u5b89\u88c5\u8f6f\u4ef6\u5305\uff0c\u8bf7\u7a0d\u5019...": "Installing packages\u2026", "\u6b63\u5728\u8bfb\u53d6...": "Reading\u2026", "\u66f4\u6362\u6587\u4ef6": "Change files", "\u6b63\u5728\u68c0\u67e5...": "Reviewing\u2026", "\u786e\u8ba4\u5e76\u5b89\u88c5": "Confirm & install", "\u65e0\u9700\u91cd\u590d\u5b89\u88c5": "Already installed", "\u7b49\u5f85\u7cfb\u7edf\u6388\u6743...": "Authorizing\u2026", "\u6b63\u5728\u5b89\u88c5...": "Installing\u2026", "\u6e05\u7a7a\u91cd\u7f6e": "Reset", "\u9009\u62e9\u5176\u4ed6\u8f6f\u4ef6\u5305": "Choose other packages", "\u91cd\u65b0\u9009\u62e9 DEB \u6587\u4ef6": "Choose DEB files again", "\u91cd\u65b0\u68c0\u67e5\u8ba1\u5212": "Review again", "\u9009\u62e9\u4e00\u4e2a\u6216\u591a\u4e2a\u4e0b\u8f7d\u597d\u7684 DEB \u6587\u4ef6\u3002": "Choose one or more local DEB files.", "\u5f53\u524d\u4efb\u52a1\u5c1a\u672a\u7ed3\u675f\uff0c\u8bf7\u5b8c\u6210\u540e\u518d\u9009\u62e9\u5176\u4ed6\u5305\u3002": "Wait for the current task before choosing other packages.", "\u4efb\u52a1\u6b63\u5728\u8fdb\u884c\uff0c\u8bf7\u7b49\u5f85\u7ed3\u679c\u540e\u5173\u95ed\u7a97\u53e3\u3002": "Wait for the current task before closing this window.", "\u5916\u89c2\u8bbe\u7f6e\u672a\u80fd\u4fdd\u5b58\uff0c\u8bf7\u68c0\u67e5\u914d\u7f6e\u76ee\u5f55\u6743\u9650\u3002": "Could not save appearance. Check configuration directory permissions.", "\u8bed\u8a00\u8bbe\u7f6e\u672a\u80fd\u4fdd\u5b58\uff0c\u8bf7\u68c0\u67e5\u914d\u7f6e\u76ee\u5f55\u6743\u9650\u3002": "Could not save language. Check configuration directory permissions.", "\u9009\u62e9 DEB \u8f6f\u4ef6\u5305": "Choose DEB packages", "DEB \u8f6f\u4ef6\u5305": "DEB packages", "\u6587\u4ef6\u9009\u62e9\u5668\u672a\u80fd\u5b8c\u6210\uff0c\u8bf7\u91cd\u8bd5\u3002": "The file picker could not complete. Please try again.", "\u64cd\u4f5c\u672a\u80fd\u5b8c\u6210\uff0c\u8bf7\u67e5\u770b\u8be6\u7ec6\u65e5\u5fd7\u3002": "The operation could not complete. Check detailed logs.", "\u8f6f\u4ef6\u5305\u5df2\u5c31\u7eea\uff0c\u8bf7\u5148\u68c0\u67e5\u5b89\u88c5\u8ba1\u5212\u3002": "Packages ready. Review the installation plan first.", "\u6b63\u5728\u8bfb\u53d6\u8f6f\u4ef6\u5305\u2026\u2026": "Reading packages\u2026", "\u68c0\u67e5\u5b8c\u6210\u3002\u8bf7\u6838\u5bf9\u4e0b\u65b9\u8ba1\u5212\uff0c\u786e\u8ba4\u540e\u5b89\u88c5\u3002": "Review complete. Check the plan before confirming installation.", "\u6240\u9009\u7248\u672c\u5df2\u5b89\u88c5\u4e14\u65e0\u9700\u66f4\u6539\uff0c\u4e0d\u5fc5\u91cd\u590d\u5b89\u88c5\u3002": "The selected versions are installed. No changes needed.", "\u6b63\u5728\u68c0\u67e5\u4f9d\u8d56\u548c\u5b89\u88c5\u8ba1\u5212\u2026\u2026": "Checking dependencies and the installation plan\u2026", "\u5b89\u88c5\u5b8c\u6210\uff0c\u5df2\u6838\u5bf9\u8f6f\u4ef6\u5305\u7248\u672c\u548c\u914d\u7f6e\u72b6\u6001\u3002": "Installation complete. Versions and configured status verified.", "\u6b63\u5728\u6838\u5bf9\u8ba1\u5212\uff0c\u968f\u540e\u5f39\u51fa\u7cfb\u7edf\u6388\u6743\u7a97\u53e3\u2026\u2026": "Verifying the plan before opening system authorization\u2026", "\u6b63\u5728\u5b89\u88c5\u8f6f\u4ef6\u5305\uff0c\u53ef\u4ee5\u5c55\u5f00\u65e5\u5fd7\u67e5\u770b\u8be6\u60c5\u3002": "Installing packages. Expand the logs for details.", "\u6240\u9009\u7248\u672c\u5df2\u5b89\u88c5\uff0c\u5f53\u524d\u65e0\u9700\u66f4\u6539\u3002": "The selected versions are installed. No changes needed.", "\u5b89\u88c5 / \u5347\u7ea7\uff1a0 \u4e2a\u8f6f\u4ef6\u5305": "Install / upgrade: 0 packages", "\u5378\u8f7d\uff1a0 \u4e2a\u8f6f\u4ef6\u5305": "Remove: 0 packages", "\u5c06\u6267\u884c\u4ee5\u4e0b\u53d8\u66f4\uff1a": "The following changes are planned:", "\u5b8c\u6574\u68c0\u67e5\u8f93\u51fa\u53ef\u5728\u8be6\u7ec6\u65e5\u5fd7\u4e2d\u67e5\u770b\u3002": "Full preflight output is available in detailed logs.", "\u8bf7\u9009\u62e9\u81f3\u5c11\u4e00\u4e2a DEB \u6587\u4ef6\u3002": "Choose at least one DEB file.", "\u8bf7\u5148\u9009\u62e9\u8f6f\u4ef6\u5305\u3002": "Choose packages first.", "\u68c0\u67e5\u671f\u95f4\u7cfb\u7edf\u8f6f\u4ef6\u72b6\u6001\u53d1\u751f\u4e86\u53d8\u5316\uff0c\u8bf7\u91cd\u65b0\u68c0\u67e5\u3002": "Package state changed during review. Review the plan again.", "\u5b89\u88c5\u8ba1\u5212\u9700\u8981\u5378\u8f7d\u73b0\u6709\u8f6f\u4ef6\uff0c\u5df2\u4e2d\u6b62\u3002": "The plan would remove existing packages. Installation blocked.", "\u8bf7\u5148\u68c0\u67e5\u5b89\u88c5\u8ba1\u5212\uff0c\u7136\u540e\u786e\u8ba4\u5b89\u88c5\u3002": "Review the installation plan before confirming installation.", "\u7cfb\u7edf\u8f6f\u4ef6\u72b6\u6001\u5df2\u53d1\u751f\u53d8\u5316\uff0c\u8bf7\u91cd\u65b0\u68c0\u67e5\u5b89\u88c5\u8ba1\u5212\u3002": "System package state changed. Review the plan again.", "\u4e34\u65f6\u8f6f\u4ef6\u5305\u5185\u5bb9\u53d1\u751f\u53d8\u5316\uff0c\u8bf7\u91cd\u65b0\u9009\u62e9\u6587\u4ef6\u3002": "The staged packages changed. Choose the files again.", "\u5b89\u88c5\u8ba1\u5212\u5df2\u53d8\u5316\u6216\u65e0\u6cd5\u786e\u8ba4\uff0c\u8bf7\u91cd\u65b0\u68c0\u67e5\u3002": "The plan changed or could not be verified. Review it again.", "\u7cfb\u7edf\u6388\u6743\u672a\u5b8c\u6210\u3002\u8f6f\u4ef6\u53ef\u80fd\u5c1a\u672a\u5f00\u59cb\u5b89\u88c5\uff0c\u8bf7\u67e5\u770b\u65e5\u5fd7\u540e\u91cd\u65b0\u68c0\u67e5\u3002": "System authorization was not completed. Installation may not have started. Review logs and check again.", "\u6700\u7ec8\u5b89\u88c5\u8ba1\u5212\u5df2\u6838\u5bf9\uff0c\u5f00\u59cb\u5b89\u88c5\u3002": "Final transaction verified. Starting installation.", "\u7cfb\u7edf\u6388\u6743\u5df2\u5b8c\u6210\uff0c\u6388\u6743\u540e\u7684\u5b89\u88c5\u8ba1\u5212\u5df2\u6838\u5bf9\u3002": "System authorization complete. The plan was rechecked.", "\u8bbe\u7f6e": "Settings", "\u5173\u95ed\u8bbe\u7f6e": "Close settings", "\u5916\u89c2\u4e0e\u8bed\u8a00": "Appearance & language", "\u8bed\u8a00": "Language", "\u7248\u672c\u4e0e\u66f4\u65b0": "Version & updates", "\u5f53\u524d\u7248\u672c": "Current version", "\u68c0\u67e5\u66f4\u65b0": "Check for updates", "\u68c0\u67e5\u4e2d\u2026": "Checking\u2026", "\u6253\u5f00\u53d1\u5e03\u9875": "Open release page", "\u4ece GitHub \u83b7\u53d6\u6700\u65b0\u516c\u5f00\u7248\u672c\u4fe1\u606f\u3002": "Check the latest public release on GitHub.", "\u5df2\u662f\u6700\u65b0\u7248\u672c\u3002": "You are up to date.", "\u53d1\u73b0\u65b0\u7248\u672c\uff1a": "A new version is available: ", "\u5f53\u524d\u8fd8\u6ca1\u6709\u516c\u5f00\u53d1\u5e03\u7248\u672c\u3002": "No public releases yet.", "\u65e0\u6cd5\u8fde\u63a5 GitHub\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002": "Could not reach GitHub. Try again later.", "\u65e0\u6cd5\u8fde\u63a5 GitHub\uff0c\u8bf7\u68c0\u67e5\u7f51\u7edc\u540e\u91cd\u8bd5\u3002": "Could not reach GitHub. Check your connection and try again.", "\u53d1\u5e03\u7248\u672c\u4fe1\u606f\u65e0\u6548\uff0c\u8bf7\u7a0d\u540e\u91cd\u8bd5\u3002": "The release response was invalid. Try again later.", "\u65e0\u6cd5\u6253\u5f00\u6d4f\u89c8\u5668\uff0c\u8bf7\u624b\u52a8\u8bbf\u95ee\u9879\u76ee\u53d1\u5e03\u9875\u3002": "Could not open your browser. Visit the project release page manually.", "\u6b64\u8bbe\u7f6e\u53ea\u5f71\u54cd Debloom\u3002": "These settings apply only to Debloom."}, "patterns": [["\u4e0d\u662f\u53ef\u8bfb\u53d6\u7684 DEB \u6587\u4ef6\uff1a(.*)", "Not a readable DEB file: $1"], ["\u65e0\u6548\u7684 DEB \u8f6f\u4ef6\u5305\uff1a(.*)", "Invalid DEB package: $1"], ["\u8f6f\u4ef6\u5305\u5143\u6570\u636e\u4e0d\u5b8c\u6574\uff1a(.*)", "Incomplete package metadata: $1"], ["\u540c\u4e00\u8f6f\u4ef6\u5305\u53ea\u80fd\u9009\u62e9\u4e00\u4e2a\u7248\u672c\uff1a(.*)", "Choose only one version of each package: $1"], ["\u5b89\u88c5\u8ba1\u5212\u68c0\u67e5\u5931\u8d25\uff08APT \u9000\u51fa\u7801 (.*)\uff09\u3002\u8bf7\u67e5\u770b\u8be6\u7ec6\u65e5\u5fd7\u3002", "Plan review failed (APT exit code $1). Check detailed logs."], ["\u5b89\u88c5\u672a\u6210\u529f\u5b8c\u6210\uff08\u9000\u51fa\u7801 (.*)\uff09\u3002\u8bf7\u67e5\u770b\u8be6\u7ec6\u65e5\u5fd7\uff1b\u8fd9\u4e0d\u4ee3\u8868\u5df2\u81ea\u52a8\u56de\u6eda\u3002", "Installation did not complete (exit code $1). Check detailed logs; changes were not automatically rolled back."], ["APT \u5df2\u7ed3\u675f\uff0c\u4f46 (.*) \u7684\u7248\u672c\u6216\u914d\u7f6e\u72b6\u6001\u672a\u901a\u8fc7\u6838\u5bf9\uff0c\u8bf7\u67e5\u770b\u65e5\u5fd7\u3002", "APT exited, but the version or configured state of $1 could not be verified. Check logs."], ["\u5347\u7ea7  (.*)\uff1a(.*) \u2192 (.*)", "Upgrade  $1: $2 \u2192 $3"], ["\u5b89\u88c5  (.*)\uff1a(.*)", "Install  $1: $2"], ["\u5b8c\u6210\u914d\u7f6e  (.*)", "Configure  $1"]]};
+  let language = 'zh';
+  let textNodes = [], attributes = [];
+  function translate(value) {
+    if (language !== 'en') return String(value);
+    return String(value).split('\n').map(line => {
+      if (Object.prototype.hasOwnProperty.call(catalog.strings, line)) return catalog.strings[line];
+      for (const [pattern, replacement] of catalog.patterns) {
+        const expression = new RegExp('^(?:' + pattern + ')$');
+        if (expression.test(line)) return line.replace(expression, replacement);
+      }
+      return line;
+    }).join('\n');
+  }
+  window.I18n = {translate, get language() { return language; }};
+  function apply(code) {
+    if (!['zh', 'en'].includes(code)) return;
+    language = code;
+    document.documentElement.lang = code === 'zh' ? 'zh-CN' : 'en';
+    for (const [node, original] of textNodes) node.textContent = original.replace(original.trim(), translate(original.trim()));
+    for (const [el, attr, original] of attributes) el.setAttribute(attr, translate(original));
+    const sel = document.getElementById('language-select');
+    if (sel) sel.value = code;
+    if (window.App) window.App.refresh();
+    if (window.Updates) window.Updates.refresh();
+  }
+  window.Locale = {receive(event) {
+    if (!event || event.type !== 'locale') return;
+    apply(event.language);
+    const feedback = document.getElementById('language-feedback');
+    if (feedback) feedback.textContent = event.error ? translate(event.error) : '';
+  }};
+  document.addEventListener('DOMContentLoaded', () => {
+    const walker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.parentElement.closest('script,style,pre')) continue;
+      if (Object.prototype.hasOwnProperty.call(catalog.strings, node.textContent.trim())) textNodes.push([node, node.textContent]);
+    }
+    for (const el of document.querySelectorAll('[aria-label],[title]')) {
+      for (const attr of ['aria-label','title']) if (el.hasAttribute(attr)) attributes.push([el, attr, el.getAttribute(attr)]);
+    }
+    document.getElementById('language-select').addEventListener('change', event => {
+      const code = event.target.value;
+      if (window.webkit?.messageHandlers?.app) window.webkit.messageHandlers.app.postMessage(JSON.stringify({action:'locale',language:code}));
+      else apply(code);
+    });
+  });
+})();
+</script>
+<!-- END GENERATED LOCALIZATION -->
+  <script>
+    (function() {
+      'use strict';
+
+      const t = value => window.I18n.translate(value);
+
+      // State store
+      let currentState = {
+        phase: 'empty',
+        packages: [],
+        planText: '',
+        message: '',
+        canInstall: false,
+        busy: false
+      };
+
+      let accumulatedLogs = '';
+
+      // Bridge communication
+      function sendAction(actionName) {
+        var payload = JSON.stringify({ action: actionName });
+        if (window.webkit &&
+            window.webkit.messageHandlers &&
+            window.webkit.messageHandlers.app &&
+            typeof window.webkit.messageHandlers.app.postMessage === 'function') {
+          window.webkit.messageHandlers.app.postMessage(payload);
+        } else {
+          console.log('[Native App Bridge Mock] postMessage:', payload);
+        }
+      }
+
+      function updatePhaseStepper(phase) {
+        var step1 = document.getElementById('step-1');
+        var step2 = document.getElementById('step-2');
+        var step3 = document.getElementById('step-3');
+
+        step1.classList.remove('active', 'completed');
+        step2.classList.remove('active', 'completed');
+        step3.classList.remove('active', 'completed');
+
+        if (phase === 'empty' || phase === 'reading') {
+          step1.classList.add('active');
+        } else if (phase === 'success') {
+          step1.classList.add('completed');
+          step2.classList.add('completed');
+          step3.classList.add('active', 'completed');
+        } else {
+          // ready, checking, checked, authorizing, installing, error, cancelled
+          step1.classList.add('completed');
+          step2.classList.add('active');
+        }
+      }
+
+      function renderStatusBanner(phase, message) {
+        var banner = document.getElementById('status-banner');
+        var textEl = document.getElementById('status-banner-text');
+
+        banner.className = 'status-banner';
+
+        // Keep empty state clean and focused: hide banner unless there is an error/warning
+        if (phase === 'empty') {
+          banner.classList.add('hidden');
+          textEl.textContent = '';
+          return;
+        }
+
+        if (!message && phase !== 'error' && phase !== 'cancelled' && phase !== 'success') {
+          banner.classList.add('hidden');
+          textEl.textContent = '';
+          return;
+        }
+
+        var displayMsg = message || '';
+        var bannerType = 'info';
+
+        if (phase === 'error') {
+          bannerType = 'error';
+          if (!displayMsg) displayMsg = '软件包检查或安装过程中发生错误，请查看下方日志。';
+        } else if (phase === 'cancelled') {
+          bannerType = 'warning';
+          if (!displayMsg) displayMsg = '系统授权未完成，请查看日志后重新检查。';
+        } else if (phase === 'success') {
+          bannerType = 'success';
+          if (!displayMsg) displayMsg = '软件包已成功安装至系统。';
+        } else if (phase === 'checked' && !currentState.canInstall) {
+          bannerType = 'info';
+          if (!displayMsg) displayMsg = '检查完成，当前无需安装变更。';
+        }
+
+        banner.classList.add('status-' + bannerType);
+        textEl.textContent = t(displayMsg);
+
+        // Toggle Icons
+        var svgs = ['info', 'warning', 'error', 'success'];
+        svgs.forEach(function(type) {
+          var el = document.getElementById('banner-svg-' + type);
+          if (el) {
+            if (type === bannerType) {
+              el.classList.remove('hidden');
+            } else {
+              el.classList.add('hidden');
+            }
+          }
+        });
+
+        banner.classList.remove('hidden');
+      }
+
+      function formatSize(bytes) {
+        if (typeof bytes !== 'number' || !Number.isFinite(bytes)) return '—';
+        if (bytes < 1024) return bytes + ' B';
+        var units = ['KiB', 'MiB', 'GiB', 'TiB'];
+        var size = bytes / 1024, index = 0;
+        while (size >= 1024 && index < units.length - 1) { size /= 1024; index++; }
+        return size.toLocaleString(window.I18n.language === 'zh' ? 'zh-CN' : 'en-US', {maximumFractionDigits: 1}) + ' ' + units[index];
+      }
+
+      function renderPackages(packages) {
+        var container = document.getElementById('packages-container');
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+
+        if (!packages || packages.length === 0) return;
+
+        packages.forEach(function(pkg) {
+          var card = document.createElement('article');
+          card.className = 'package-card';
+
+          var header = document.createElement('div');
+          header.className = 'package-header';
+
+          var titleRow = document.createElement('div');
+          titleRow.className = 'package-title-row';
+
+          var title = document.createElement('h2');
+          title.className = 'package-name';
+          title.textContent = pkg.name || t('未知软件包');
+          titleRow.appendChild(title);
+
+          if (pkg.version) {
+            var verBadge = document.createElement('span');
+            verBadge.className = 'badge badge-version';
+            verBadge.textContent = pkg.version;
+            titleRow.appendChild(verBadge);
+          }
+
+          if (pkg.architecture) {
+            var archBadge = document.createElement('span');
+            archBadge.className = 'badge badge-arch';
+            archBadge.textContent = pkg.architecture;
+            titleRow.appendChild(archBadge);
+          }
+
+          if (pkg.installedVersion) {
+            var instBadge = document.createElement('span');
+            instBadge.className = 'badge badge-installed';
+            instBadge.textContent = t('已安装：') + pkg.installedVersion;
+            titleRow.appendChild(instBadge);
+          }
+
+          header.appendChild(titleRow);
+          card.appendChild(header);
+
+          var metaGrid = document.createElement('div');
+          metaGrid.className = 'meta-grid';
+
+          var fields = [
+            { label: '文件名', value: pkg.filename || '—' },
+            { label: '文件大小', value: formatSize(pkg.size) },
+            { label: '架构平台', value: pkg.architecture || '—' }
+          ];
+
+          fields.forEach(function(f) {
+            var item = document.createElement('div');
+            item.className = 'meta-item';
+
+            var label = document.createElement('span');
+            label.className = 'meta-label';
+            label.textContent = t(f.label);
+            item.appendChild(label);
+
+            var val = document.createElement('span');
+            val.className = 'meta-value';
+            val.textContent = f.value;
+            item.appendChild(val);
+
+            metaGrid.appendChild(item);
+          });
+
+          card.appendChild(metaGrid);
+
+          if (pkg.description) {
+            var descWrap = document.createElement('div');
+            descWrap.className = 'desc-container';
+
+            var descLabel = document.createElement('div');
+            descLabel.className = 'desc-label';
+            descLabel.textContent = t('软件包说明');
+            descWrap.appendChild(descLabel);
+
+            var descText = document.createElement('div');
+            descText.className = 'desc-text';
+            descText.textContent = pkg.description;
+            descWrap.appendChild(descText);
+
+            card.appendChild(descWrap);
+          }
+
+          container.appendChild(card);
+        });
+      }
+
+      function updateUI(state) {
+        currentState = state;
+
+        var phase = state.phase || 'empty';
+        var packages = Array.isArray(state.packages) ? state.packages : [];
+        var planText = typeof state.planText === 'string' ? state.planText : '';
+        var message = typeof state.message === 'string' ? state.message : '';
+        var canInstall = Boolean(state.canInstall);
+        var busy = Boolean(state.busy);
+
+        var viewEmpty = document.getElementById('view-empty');
+        var viewContent = document.getElementById('view-content');
+        var planBox = document.getElementById('plan-output');
+        var installExplanation = document.getElementById('install-explanation');
+        var busyIndicator = document.getElementById('busy-indicator');
+        var busyText = document.getElementById('busy-text');
+        var logDetails = document.getElementById('log-details');
+
+        updatePhaseStepper(phase);
+        renderStatusBanner(phase, message);
+
+        if (packages.length === 0 && (phase === 'empty' || phase === 'reading')) {
+          viewEmpty.classList.remove('hidden');
+          viewContent.classList.add('hidden');
+        } else {
+          viewEmpty.classList.add('hidden');
+          viewContent.classList.remove('hidden');
+          renderPackages(packages);
+        }
+
+        // Plan presentation
+        if (planText && planText.trim()) {
+          planBox.textContent = t(planText);
+          planBox.classList.remove('placeholder-text');
+        } else {
+          if (phase === 'reading' || phase === 'checking') {
+            planBox.textContent = t('正在分析 APT 依赖与模拟安装计划，请稍候...');
+          } else if (phase === 'ready') {
+            planBox.textContent = t('尚未执行检查。请点击下方“检查安装计划”以分析依赖与计划变更。');
+          } else {
+            planBox.textContent = t('暂无安装计划详情。');
+          }
+          planBox.classList.add('placeholder-text');
+        }
+
+        // Auto open log drawer on failure
+        if (phase === 'error') {
+          logDetails.open = true;
+        }
+
+        // Busy status
+        if (busy) {
+          busyIndicator.classList.remove('hidden');
+        } else {
+          busyIndicator.classList.add('hidden');
+        }
+
+        var phaseNotice = '';
+        switch(phase) {
+          case 'reading': phaseNotice = t('正在读取软件包信息...'); break;
+          case 'checking': phaseNotice = t('正在检查 APT 依赖与生成计划...'); break;
+          case 'authorizing': phaseNotice = t('等待系统授权窗口确认...'); break;
+          case 'installing': phaseNotice = t('正在安装软件包，请稍候...'); break;
+          default: phaseNotice = ''; break;
+        }
+        busyText.textContent = t(phaseNotice);
+
+        // Install explanation notice
+        if (phase === 'checked' && canInstall) {
+          installExplanation.classList.remove('hidden');
+        } else {
+          installExplanation.classList.add('hidden');
+        }
+
+        // Buttons
+        var btnPrimary = document.getElementById('btn-primary');
+        var btnSecondary = document.getElementById('btn-secondary');
+        var btnEmptyChoose = document.getElementById('btn-choose-empty');
+
+        btnEmptyChoose.disabled = busy;
+        btnPrimary.classList.remove('hidden');
+        btnSecondary.classList.remove('hidden');
+        btnPrimary.disabled = busy;
+        btnSecondary.disabled = busy;
+
+        switch (phase) {
+          case 'empty':
+            btnSecondary.classList.add('hidden');
+            btnPrimary.classList.add('hidden');
+            break;
+
+          case 'reading':
+            btnSecondary.classList.add('hidden');
+            btnPrimary.textContent = t('正在读取...');
+            btnPrimary.disabled = true;
+            break;
+
+          case 'ready':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.onclick = function() { sendAction('choose'); };
+            btnPrimary.textContent = t('检查安装计划');
+            btnPrimary.onclick = function() { sendAction('check'); };
+            break;
+
+          case 'checking':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.disabled = true;
+            btnPrimary.textContent = t('正在检查...');
+            btnPrimary.disabled = true;
+            break;
+
+          case 'checked':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.onclick = function() { sendAction('choose'); };
+            btnPrimary.textContent = t('确认并安装');
+            if (canInstall) {
+              btnPrimary.disabled = busy;
+              btnPrimary.onclick = function() { sendAction('install'); };
+            } else {
+              btnPrimary.disabled = true;
+              btnPrimary.textContent = t('无需重复安装');
+            }
+            break;
+
+          case 'authorizing':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.disabled = true;
+            btnPrimary.textContent = t('等待系统授权...');
+            btnPrimary.disabled = true;
+            break;
+
+          case 'installing':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.disabled = true;
+            btnPrimary.textContent = t('正在安装...');
+            btnPrimary.disabled = true;
+            break;
+
+          case 'success':
+            btnSecondary.textContent = t('清空重置');
+            btnSecondary.onclick = function() { sendAction('reset'); };
+            btnPrimary.textContent = t('选择其他软件包');
+            btnPrimary.onclick = function() { sendAction('choose'); };
+            break;
+
+          case 'error':
+            if (packages.length === 0) {
+              btnSecondary.classList.add('hidden');
+              btnPrimary.textContent = t('重新选择 DEB 文件');
+              btnPrimary.onclick = function() { sendAction('choose'); };
+              break;
+            }
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.onclick = function() { sendAction('choose'); };
+            btnPrimary.textContent = t('重新检查计划');
+            btnPrimary.disabled = busy;
+            btnPrimary.onclick = function() { sendAction('check'); };
+            break;
+
+          case 'cancelled':
+            btnSecondary.textContent = t('更换文件');
+            btnSecondary.onclick = function() { sendAction('choose'); };
+            btnPrimary.textContent = t('重新检查计划');
+            btnPrimary.disabled = busy;
+            btnPrimary.onclick = function() { sendAction('check'); };
+            break;
+
+          default:
+            btnPrimary.disabled = busy;
+            break;
+        }
+      }
+
+      function handleStateEvent(event) {
+        var state = {
+          phase: event.phase || 'empty',
+          packages: Array.isArray(event.packages) ? event.packages : [],
+          planText: typeof event.planText === 'string' ? event.planText : '',
+          message: typeof event.message === 'string' ? event.message : '',
+          canInstall: Boolean(event.canInstall),
+          busy: Boolean(event.busy)
+        };
+        updateUI(state);
+      }
+
+      function handleLogEvent(text) {
+        if (!text) return;
+        accumulatedLogs += String(text);
+        if (accumulatedLogs.length > 150000) {
+          accumulatedLogs = accumulatedLogs.slice(-150000);
+        }
+        var logBox = document.getElementById('log-output');
+        logBox.textContent = accumulatedLogs;
+        logBox.scrollTop = logBox.scrollHeight;
+      }
+
+      function handleClearLog() {
+        accumulatedLogs = '';
+        var logBox = document.getElementById('log-output');
+        logBox.textContent = '';
+      }
+
+      // Expose bridge receiving endpoint
+      window.App = {
+        refresh: function() { updateUI(currentState); },
+        receive: function(event) {
+          if (!event || typeof event !== 'object') return;
+          if (event.type === 'state' || (!event.type && event.phase)) {
+            handleStateEvent(event);
+          } else if (event.type === 'log') {
+            handleLogEvent(event.text);
+          } else if (event.type === 'clear-log') {
+            handleClearLog();
+          }
+        }
+      };
+
+      // Bootstrap
+      window.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('btn-choose-empty').addEventListener('click', function() {
+          sendAction('choose');
+        });
+
+        updateUI(currentState);
+        sendAction('ready');
+      });
+    })();
+  </script>
+  <script>
+  (function() {
+    'use strict';
+
+    function getSelect() {
+      return document.getElementById('appearance-select');
+    }
+
+    function getFeedback() {
+      return document.getElementById('appearance-feedback');
+    }
+
+    function applyTheme(effective) {
+      if (effective === 'dark' || effective === 'light') {
+        document.documentElement.dataset.theme = effective;
+      }
+    }
+
+    function onSelectChange() {
+      var sel = getSelect();
+      if (!sel) return;
+      var mode = sel.value;
+
+      if (window.webkit &&
+          window.webkit.messageHandlers &&
+          window.webkit.messageHandlers.app &&
+          typeof window.webkit.messageHandlers.app.postMessage === 'function') {
+        window.webkit.messageHandlers.app.postMessage(JSON.stringify({
+          action: 'appearance',
+          mode: mode
+        }));
+      } else {
+        var effective = mode;
+        if (mode === 'system') {
+          effective = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+        }
+        applyTheme(effective);
+      }
+    }
+
+    function bindEvents() {
+      var sel = getSelect();
+      if (sel && !sel._appearanceBound) {
+        sel.addEventListener('change', onSelectChange);
+        sel._appearanceBound = true;
+      }
+    }
+
+    window.Appearance = {
+      receive: function(event) {
+        if (!event || typeof event !== 'object' || event.type !== 'appearance') return;
+        if (event.effective) {
+          applyTheme(event.effective);
+        }
+        var sel = getSelect();
+        if (sel && event.mode) {
+          sel.value = event.mode;
+        }
+        var fb = getFeedback();
+        if (fb) {
+          fb.textContent = event.error ? window.I18n.translate(String(event.error)) : '';
+          fb.title = fb.textContent;
+        }
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', bindEvents);
+    } else {
+      bindEvents();
+    }
+  })();
+  </script>
+
+  <script>
+  (() => {
+    'use strict';
+    let state = {type:'updates',status:'idle',current:'0.1.0'};
+    const send = action => {if(window.webkit?.messageHandlers?.app)window.webkit.messageHandlers.app.postMessage(JSON.stringify({action}));};
+    function render() {
+      const t = window.I18n.translate;
+      const button = document.getElementById('btn-check-updates');
+      button.disabled = state.status === 'checking';
+      button.textContent = t(button.disabled ? '检查中…' : '检查更新');
+      document.getElementById('app-version').textContent = 'v'+state.current;
+      let text = '从 GitHub 获取最新公开版本信息。';
+      if(state.status==='current')text='已是最新版本。';
+      if(state.status==='unpublished')text='当前还没有公开发布版本。';
+      if(state.status==='checking')text='检查中…';
+      document.getElementById('update-status').textContent = state.status==='available' ? t('发现新版本：')+state.latest : t(state.error || text);
+      document.getElementById('btn-open-release').classList.toggle('hidden',state.status!=='available');
+    }
+    window.Updates = {receive(event){if(event?.type==='updates'){state=event;render();}},refresh:render};
+    document.addEventListener('DOMContentLoaded', () => {
+      const dialog=document.getElementById('settings-dialog');
+      document.getElementById('btn-settings').addEventListener('click',()=>dialog.showModal());
+      document.getElementById('settings-close').addEventListener('click',()=>dialog.close());
+      document.getElementById('btn-check-updates').addEventListener('click',()=>send('check-updates'));
+      document.getElementById('btn-open-release').addEventListener('click',()=>send('open-release'));
+      render();
+    });
+  })();
+  </script>
+
+</body>
+</html>

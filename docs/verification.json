@@ -1,0 +1,448 @@
+{
+  "version": "0.1.0",
+  "date": "2026-10-14",
+  "tests": {
+    "appearance": 7,
+    "gui_control": 6,
+    "backend": 21,
+    "guard": 13,
+    "terminal": 14,
+    "deployment": 5,
+    "localization": 4,
+    "updates": 5,
+    "total": 75
+  },
+  "environment": {
+    "python": "Python 3.14.8",
+    "gtk": "4.24.1",
+    "webkit": "2.52.6"
+  },
+  "runtime_sha256": {
+    "gui.py": "80d098a763a54ee89301577ae14ccdbe8921ff3e3856e2d897911d8f6998bdc0",
+    "backend.py": "716e3f34d878f65dd7330bcbbcfc7a93f5ab295c0cde9c260f9d3262de783c14",
+    "install_guard.py": "cc7cc5e2005ff6a54805125b77996c5823431d9250ea8006569067fe2dc98ec2",
+    "appearance.py": "870969dd9dd572b9735e30921069cc2321cb9e72644a40e3ba9b892d0c7077e2",
+    "localization.py": "311ce88b8e25e476224258fdcb906132ef23a4c37177b93cbe0e849c41edb1f7",
+    "translations.json": "37bb9271979919751e056cfe88e7b46cee6c5b6931f02f618138ad597294ac50",
+    "updates.py": "d797b9fb43d46b124b238dea3b4fb023545311e90340cc10f139a4e60bc9f17d",
+    "version.py": "0a95e2de31a5c76dd1bd1c94ee2cad38c66b9eca5d5b0e32a1f4bc9693f50095",
+    "index.html": "e3de0613999ebfbad494b7f0827f5da8cb19cf8c6c89ce47f9b2bc0aeb644726",
+    "local-deb-installer.svg": "edaf655f50d002c8953f96453c6a224747c39841b96114ed80109346cf2a444e"
+  },
+  "deployed_matches": {
+    "gui.py": true,
+    "backend.py": true,
+    "install_guard.py": true,
+    "appearance.py": true,
+    "localization.py": true,
+    "translations.json": true,
+    "updates.py": true,
+    "version.py": true,
+    "index.html": true,
+    "local-deb-installer.svg": true
+  },
+  "icon_pixels_match": {
+    "hicolor/16": true,
+    "hicolor/24": true,
+    "hicolor/32": true,
+    "hicolor/48": true,
+    "hicolor/64": true,
+    "hicolor/96": true,
+    "hicolor/128": true,
+    "hicolor/256": true,
+    "hicolor/512": true,
+    "DockNormalized/16": true,
+    "DockNormalized/24": true,
+    "DockNormalized/32": true,
+    "DockNormalized/48": true,
+    "DockNormalized/64": true,
+    "DockNormalized/96": true,
+    "DockNormalized/128": true,
+    "DockNormalized/256": true,
+    "DockNormalized/512": true
+  },
+  "preview_checks": {
+    "1040": {
+      "bridge_ready": true,
+      "phase": "checked",
+      "snapshots": [
+        "light.png",
+        "dark.png",
+        "system.png",
+        "checked-light.png",
+        "checked-dark.png",
+        "checked-system.png",
+        "checked-en.png",
+        "checked-en-light.png",
+        "checked-en-dark.png",
+        "checked-zh.png",
+        "checked-zh-light.png",
+        "checked-zh-dark.png",
+        "settings-zh.png",
+        "settings-en.png"
+      ],
+      "frontend_checks": {
+        "external_text_is_literal": true,
+        "no_html_injection": true,
+        "no_password_field": true,
+        "checked_install_enabled": true,
+        "size_is_readable": true,
+        "no_change_disables_install": true,
+        "busy_disables_actions": true,
+        "settings_remain_accessible_while_busy": true,
+        "invalid_package_allows_reselect": true,
+        "error_expands_log": true,
+        "log_is_bounded": true,
+        "log_can_clear": true
+      },
+      "appearance_checks": {
+        "light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "system.png": {
+          "selected": "system",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-system.png": {
+          "selected": "system",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-en-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-en-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-zh-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-zh-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 1040,
+          "height": 800,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "locale_checks": {
+        "checked-en.png": {
+          "selected": "en",
+          "lang": "en",
+          "primary": "Confirm & install",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        },
+        "checked-zh.png": {
+          "selected": "zh",
+          "lang": "zh-CN",
+          "primary": "确认并安装",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        },
+        "settings-en.png": {
+          "selected": "en",
+          "lang": "en",
+          "primary": "Confirm & install",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        }
+      },
+      "real_install": false
+    },
+    "800": {
+      "bridge_ready": true,
+      "phase": "checked",
+      "snapshots": [
+        "light.png",
+        "dark.png",
+        "system.png",
+        "checked-light.png",
+        "checked-dark.png",
+        "checked-system.png",
+        "checked-en.png",
+        "checked-en-light.png",
+        "checked-en-dark.png",
+        "checked-zh.png",
+        "checked-zh-light.png",
+        "checked-zh-dark.png",
+        "settings-zh.png",
+        "settings-en.png"
+      ],
+      "frontend_checks": {
+        "external_text_is_literal": true,
+        "no_html_injection": true,
+        "no_password_field": true,
+        "checked_install_enabled": true,
+        "size_is_readable": true,
+        "no_change_disables_install": true,
+        "busy_disables_actions": true,
+        "settings_remain_accessible_while_busy": true,
+        "invalid_package_allows_reselect": true,
+        "error_expands_log": true,
+        "log_is_bounded": true,
+        "log_can_clear": true
+      },
+      "appearance_checks": {
+        "light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "system.png": {
+          "selected": "system",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-system.png": {
+          "selected": "system",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-en-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-en-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-zh-light.png": {
+          "selected": "light",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        },
+        "checked-zh-dark.png": {
+          "selected": "dark",
+          "effective": "dark",
+          "background": "rgb(11, 14, 20)",
+          "horizontal_overflow": false,
+          "width": 800,
+          "height": 640,
+          "options": [
+            "system",
+            "light",
+            "dark"
+          ]
+        }
+      },
+      "locale_checks": {
+        "checked-en.png": {
+          "selected": "en",
+          "lang": "en",
+          "primary": "Confirm & install",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        },
+        "checked-zh.png": {
+          "selected": "zh",
+          "lang": "zh-CN",
+          "primary": "确认并安装",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        },
+        "settings-en.png": {
+          "selected": "en",
+          "lang": "en",
+          "primary": "Confirm & install",
+          "title": "Debloom",
+          "horizontal_overflow": false
+        }
+      },
+      "real_install": false
+    }
+  },
+  "real_root_authorization": false,
+  "real_system_deb_installation": false
+}

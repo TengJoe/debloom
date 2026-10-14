@@ -1,0 +1,17 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Debloom
+Name[zh_CN]=Debloom
+Name[en]=Debloom
+Comment=Review and install local DEB packages
+Comment[zh_CN]=选择、检查并安装本地 DEB 软件包
+Exec=@GUI_LAUNCHER@ %F
+TryExec=@GUI_LAUNCHER@
+Icon=local-deb-installer
+Terminal=false
+StartupNotify=false
+StartupWMClass=local.deb.Installer
+Categories=System;
+MimeType=application/vnd.debian.binary-package;application/x-deb;
+Keywords=deb;install;安装;软件包;

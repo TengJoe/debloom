@@ -1,0 +1,30 @@
+# Publish only application code, reproducible tools, tests and curated documentation.
+# Private local audit receipts, machine paths, agent transcripts and backups stay local.
+/*
+!/.gitignore
+!/README.md
+!/README.en.md
+!/CHANGELOG.md
+!/gui.py
+!/backend.py
+!/install_guard.py
+!/appearance.py
+!/localization.py
+!/translations.json
+!/updates.py
+!/version.py
+!/deployment.py
+!/install.py
+!/index.html
+!/local-deb-installer.svg
+!/local-deb-installer.desktop
+!/deb-install
+!/deb-install-gui
+!/test_*.py
+!/scripts/
+!/docs/
+!/.github/
+__pycache__/
+*.pyc
+*.deb
+docs/raw/
