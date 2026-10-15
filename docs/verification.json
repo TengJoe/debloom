@@ -1,32 +1,36 @@
 {
-  "version": "0.1.0",
-  "date": "2026-10-14",
+  "version": "0.1.1",
+  "date": "2026-10-15",
   "tests": {
     "appearance": 7,
     "gui_control": 6,
     "backend": 21,
     "guard": 13,
     "terminal": 14,
-    "deployment": 5,
+    "deployment": 6,
     "localization": 4,
     "updates": 5,
-    "total": 75
+    "total": 82,
+    "paths": 3,
+    "measurement": 3
   },
   "environment": {
     "python": "Python 3.14.8",
     "gtk": "4.24.1",
-    "webkit": "2.52.6"
+    "webkit": "2.52.6",
+    "os": "Ubuntu 26.10"
   },
   "runtime_sha256": {
     "gui.py": "8015b1e170145a56395ce3b9c6efa7749f197c1941efcd1df88442d40fbf2c53",
     "backend.py": "716e3f34d878f65dd7330bcbbcfc7a93f5ab295c0cde9c260f9d3262de783c14",
     "install_guard.py": "cc7cc5e2005ff6a54805125b77996c5823431d9250ea8006569067fe2dc98ec2",
-    "appearance.py": "870969dd9dd572b9735e30921069cc2321cb9e72644a40e3ba9b892d0c7077e2",
+    "appearance.py": "64d7f0bf5516a2c90166dd1023b5ef1d4a4c4b12a02855068c217597579d2081",
+    "paths.py": "17878527ca838f34c6a1fbc081199b393ba5fb37b3056c94d1d17ddaffd2d8a6",
     "localization.py": "311ce88b8e25e476224258fdcb906132ef23a4c37177b93cbe0e849c41edb1f7",
     "translations.json": "37bb9271979919751e056cfe88e7b46cee6c5b6931f02f618138ad597294ac50",
     "updates.py": "d797b9fb43d46b124b238dea3b4fb023545311e90340cc10f139a4e60bc9f17d",
-    "version.py": "0a95e2de31a5c76dd1bd1c94ee2cad38c66b9eca5d5b0e32a1f4bc9693f50095",
-    "index.html": "e3de0613999ebfbad494b7f0827f5da8cb19cf8c6c89ce47f9b2bc0aeb644726",
+    "version.py": "2b86eaa7825d3acf4a1d8325b456e836578770282f47557bb8027007cc25610c",
+    "index.html": "3c2d00e9dd2e1714417856d8d4720d04b4707179be24e024d51872e044bb58da",
     "local-deb-installer.svg": "edaf655f50d002c8953f96453c6a224747c39841b96114ed80109346cf2a444e"
   },
   "deployed_matches": {
@@ -34,6 +38,7 @@
     "backend.py": true,
     "install_guard.py": true,
     "appearance.py": true,
+    "paths.py": true,
     "localization.py": true,
     "translations.json": true,
     "updates.py": true,
@@ -65,6 +70,18 @@
     "1040": {
       "bridge_ready": true,
       "phase": "checked",
+      "packages": [
+        {
+          "name": "debloom-demo",
+          "version": "1.0",
+          "architecture": "all",
+          "filename": "debloom-demo.deb",
+          "size": 492,
+          "description": "A local demo package for Debloom UI previews",
+          "installedVersion": ""
+        }
+      ],
+      "canInstall": true,
       "snapshots": [
         "light.png",
         "dark.png",
@@ -250,11 +267,24 @@
           "horizontal_overflow": false
         }
       },
+      "check_triggered_by_html_button": true,
       "real_install": false
     },
     "800": {
       "bridge_ready": true,
       "phase": "checked",
+      "packages": [
+        {
+          "name": "debloom-demo",
+          "version": "1.0",
+          "architecture": "all",
+          "filename": "debloom-demo.deb",
+          "size": 492,
+          "description": "A local demo package for Debloom UI previews",
+          "installedVersion": ""
+        }
+      ],
+      "canInstall": true,
       "snapshots": [
         "light.png",
         "dark.png",
@@ -440,9 +470,64 @@
           "horizontal_overflow": false
         }
       },
+      "check_triggered_by_html_button": true,
       "real_install": false
     }
   },
   "real_root_authorization": false,
-  "real_system_deb_installation": false
+  "real_system_deb_installation": false,
+  "patch_checks": {
+    "xdg_empty_and_relative_fallback": true,
+    "gio_real_launch_and_exact_argv": true,
+    "separate_parent_and_child_cpu": true,
+    "startup_combined_imports_measured_directly": true,
+    "no_compiled_speedup_claim": true,
+    "system_preferences_preserved": true,
+    "guard_unchanged": true,
+    "backend_unchanged": true
+  },
+  "installed_smoke": {
+    "width": 800,
+    "bridge_ready": true,
+    "phase": "checked",
+    "snapshots": 14,
+    "frontend_checks": {
+      "external_text_is_literal": true,
+      "no_html_injection": true,
+      "no_password_field": true,
+      "checked_install_enabled": true,
+      "size_is_readable": true,
+      "no_change_disables_install": true,
+      "busy_disables_actions": true,
+      "settings_remain_accessible_while_busy": true,
+      "invalid_package_allows_reselect": true,
+      "error_expands_log": true,
+      "log_is_bounded": true,
+      "log_can_clear": true
+    },
+    "locale_checks": {
+      "checked-en.png": {
+        "selected": "en",
+        "lang": "en",
+        "primary": "Confirm & install",
+        "title": "Debloom",
+        "horizontal_overflow": false
+      },
+      "checked-zh.png": {
+        "selected": "zh",
+        "lang": "zh-CN",
+        "primary": "确认并安装",
+        "title": "Debloom",
+        "horizontal_overflow": false
+      },
+      "settings-en.png": {
+        "selected": "en",
+        "lang": "en",
+        "primary": "Confirm & install",
+        "title": "Debloom",
+        "horizontal_overflow": false
+      }
+    },
+    "real_install": false
+  }
 }

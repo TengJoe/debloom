@@ -1,10 +1,10 @@
-# Debloom 0.1.0 verification
+# Debloom 0.1.1 verification
 
-Acceptance date: 2026-10-14. The machine-readable evidence is [verification.json](verification.json).
+Acceptance date: 2026-10-15. The machine-readable evidence is [verification.json](verification.json).
 
 ## Functional tests
 
-75 tests passed:
+82 tests passed:
 
 | Area | Tests | Scope |
 |---|---:|---|
@@ -13,9 +13,11 @@ Acceptance date: 2026-10-14. The machine-readable evidence is [verification.json
 | Package backend | 21 | staging, metadata, architecture-qualified queries, plan/state/hash changes, result readback |
 | APT transaction guard | 13 | isolated real APT with a dpkg stub, changed plan/hash/state rejection |
 | Terminal compatibility | 14 | original files, staging permissions, error codes, cancellation, cleanup |
-| Deployment | 5 | backup integrity, later edits, symlink rejection, archive/restore, unusual home paths |
+| Deployment | 6 | backup integrity, later edits, symlink rejection, archive/restore, unusual home paths |
 | Localization | 4 | default, persistence, invalid language, save failure, live changes |
 | Update check | 5 | newer/current/older versions, invalid/offline/oversized responses, fixed release URL, independent task state |
+| XDG directories | 3 | unset/empty/relative/absolute values, preference persistence, real isolated installation targets |
+| Measurement evidence | 3 | child CPU attribution, failed-process rejection, unique outputs and overwrite refusal |
 
 Changed deployment, localization, update and rendering modules also pass Ruff checks. The existing installation guard source retains its pre-redesign SHA-256.
 
@@ -27,9 +29,17 @@ All three appearance choices and both languages were exercised through actual se
 
 The published PNGs contain an inert demo package and simulated installation plan. No success or root authorization screenshot is presented as a real package installation.
 
-The ten application runtime files match their deployed copies byte-for-byte. All nine PNG sizes in hicolor and DockNormalized match freshly rendered SVG pixels. Desktop entry validation passes.
+The eleven application runtime files match their deployed copies byte-for-byte. All nine PNG sizes in hicolor and DockNormalized match freshly rendered SVG pixels. Desktop entry validation passes.
 
-## Review fixes
+## Patch acceptance
+
+The XDG resolver applies one rule to config, data and state: empty or relative environment values use standard HOME defaults. Isolated installation tests verify every target stays beneath the temporary user's home, no files appear in the working directory, and preferences retain private permissions.
+
+The desktop entry is serialized with GLib KeyFile after applying Exec argument quoting. A fixed `/usr/bin/python3` executable avoids percent-code probing of an escaped executable filename. Real GIO launches and both shell aliases are checked across eight home-path variants, forwarding two filenames with spaces, Unicode, dollar signs, backticks and percent codes exactly.
+
+The existing root APT guard and backend installation transaction logic are unchanged by this patch. Measurement corrections and their limits are recorded in [the benchmark report](../bench/REPORT.md).
+
+## Earlier review fixes
 
 - Successful version readback now refreshes installed-version metadata. A failed readback leaves it unchanged.
 - dpkg queries specify the requested architecture, avoiding multiarch ambiguity.

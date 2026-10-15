@@ -5,12 +5,13 @@ from unittest.mock import Mock, patch
 from urllib.error import HTTPError, URLError
 
 from updates import UpdateError, check_for_update
+from version import VERSION
 
 
 class UpdateTests(unittest.TestCase):
-    def opener(self, tag="v0.1.0", **extra):
+    def opener(self, tag=None, **extra):
         data = {
-            "tag_name": tag,
+            "tag_name": tag if tag is not None else "v" + VERSION,
             "html_url": "https://malicious.invalid/execute",
             **extra,
         }

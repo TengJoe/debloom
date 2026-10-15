@@ -1,0 +1,14 @@
+{
+  "corpus_size": 44,
+  "architectures": [
+    "amd64",
+    "i386"
+  ],
+  "summary": {
+    "no_change": 15,
+    "installable": 27,
+    "reject_apt": 2
+  },
+  "acceptable_percent": 95.45454545454545,
+  "scope": "metadata and APT simulation only; no real installation or maintainer-script validation"
+}

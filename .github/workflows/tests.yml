@@ -6,6 +6,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install desktop test dependencies
-        run: sudo apt-get update && sudo apt-get install -y python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-webkit-6.0 gir1.2-rsvg-2.0 xvfb
+        run: sudo apt-get update && sudo apt-get install -y python3-gi python3-cairo python3-gi-cairo gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-webkit-6.0 gir1.2-rsvg-2.0 xvfb pkexec dpkg-dev desktop-file-utils
       - name: Run isolated tests (no real package installation)
         run: xvfb-run -a /usr/bin/python3 -m unittest discover -v

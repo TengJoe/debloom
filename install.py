@@ -10,6 +10,7 @@ import subprocess
 from pathlib import Path
 
 from deployment import deploy, rollback
+from paths import xdg_home
 
 ROOT = Path(__file__).resolve().parent
 RUNTIME = (
@@ -17,6 +18,7 @@ RUNTIME = (
     "backend.py",
     "install_guard.py",
     "appearance.py",
+    "paths.py",
     "localization.py",
     "translations.json",
     "updates.py",
@@ -50,7 +52,9 @@ def render_icons():
 
 def build_files(home, data_home=None):
     home = Path(home)
-    data = Path(data_home) if data_home else home / ".local/share"
+    data = Path(data_home) if data_home is not None else home / ".local/share"
+    if not home.is_absolute() or not data.is_absolute():
+        raise ValueError("Deployment directories must be absolute paths")
     files = {}
     for name in RUNTIME:
         files[home / ".local/lib/local-deb-installer" / name] = (
@@ -68,23 +72,30 @@ def build_files(home, data_home=None):
         (ROOT / "deb-install").read_bytes(),
         0o755,
     )
-    launcher = str(home / ".local/bin/debloom")
-    # Desktop Exec follows its own quoting rules, not shell quoting.
+    # KeyFile handles string escaping, followed by the separate Exec argument
+    # quoting rules. A fixed interpreter avoids GIO probing a percent-escaped
+    # executable path before field-code expansion.
+    import gi
+
+    gi.require_version("GLib", "2.0")
+    from gi.repository import GLib
+
+    script = str(home / ".local/lib/local-deb-installer/gui.py")
     quoted = (
         '"'
-        + launcher.replace("\\", "\\\\")
+        + script.replace("\\", "\\\\")
         .replace('"', '\\"')
         .replace("`", "\\`")
         .replace("$", "\\$")
         .replace("%", "%%")
         + '"'
     )
-    desktop = (
-        (ROOT / "local-deb-installer.desktop")
-        .read_text()
-        .replace("\nExec=@GUI_LAUNCHER@", "\nExec=" + quoted)
-        .replace("\nTryExec=@GUI_LAUNCHER@", "\nTryExec=" + launcher)
-    )
+    template = (ROOT / "local-deb-installer.desktop").read_text()
+    entry = GLib.KeyFile()
+    entry.load_from_data(template, len(template.encode()), GLib.KeyFileFlags.NONE)
+    entry.set_string("Desktop Entry", "Exec", "/usr/bin/python3 " + quoted + " %F")
+    entry.set_string("Desktop Entry", "TryExec", "/usr/bin/python3")
+    desktop, _ = entry.to_data()
     files[data / "applications/local-deb-installer.desktop"] = (desktop.encode(), 0o644)
     icons = render_icons()
     themes = ["hicolor"]
@@ -158,7 +169,7 @@ def main():
     args = parser.parse_args()
     if os.geteuid() == 0:
         parser.error("Run as your ordinary desktop user, without sudo.")
-    data = Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
+    data = xdg_home("data")
     if args.rollback:
         count = rollback(args.rollback, args.apply)
         if args.apply:
@@ -176,10 +187,7 @@ def main():
             f"Dependencies OK. {len(files)} files prepared for the current user. Add --apply to install."
         )
         return
-    state = (
-        Path(os.environ.get("XDG_STATE_HOME", str(Path.home() / ".local/state")))
-        / "debloom/deployments"
-    )
+    state = xdg_home("state") / "debloom/deployments"
     receipt = deploy(files, state)
     refresh_caches(data)
     print("Debloom installed. Launch: " + str(Path.home() / ".local/bin/debloom"))

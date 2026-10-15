@@ -1201,7 +1201,7 @@ html, body {
       <div class="settings-row"><label for="language-select">语言</label><select id="language-select" class="appearance-select" aria-label="界面语言"><option value="zh">中文</option><option value="en">English</option></select></div>
       <p id="language-feedback" class="appearance-feedback" aria-live="polite"></p>
     </section>
-    <section class="settings-section"><h3>版本与更新</h3><div class="settings-row"><span>当前版本</span><code id="app-version">v0.1.0</code></div>
+    <section class="settings-section"><h3>版本与更新</h3><div class="settings-row"><span>当前版本</span><code id="app-version">—</code></div>
       <p id="update-status" class="settings-note" role="status" aria-live="polite">从 GitHub 获取最新公开版本信息。</p>
       <div class="update-actions"><button id="btn-check-updates" type="button" class="btn btn-primary">检查更新</button><button id="btn-open-release" type="button" class="btn btn-secondary hidden">打开发布页</button></div>
     </section>
@@ -1781,14 +1781,14 @@ html, body {
   <script>
   (() => {
     'use strict';
-    let state = {type:'updates',status:'idle',current:'0.1.0'};
+    let state = {type:'updates',status:'idle',current:''};
     const send = action => {if(window.webkit?.messageHandlers?.app)window.webkit.messageHandlers.app.postMessage(JSON.stringify({action}));};
     function render() {
       const t = window.I18n.translate;
       const button = document.getElementById('btn-check-updates');
       button.disabled = state.status === 'checking';
       button.textContent = t(button.disabled ? '检查中…' : '检查更新');
-      document.getElementById('app-version').textContent = 'v'+state.current;
+      document.getElementById('app-version').textContent = state.current ? 'v'+state.current : '—';
       let text = '从 GitHub 获取最新公开版本信息。';
       if(state.status==='current')text='已是最新版本。';
       if(state.status==='unpublished')text='当前还没有公开发布版本。';

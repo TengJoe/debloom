@@ -88,6 +88,8 @@ Installation prints a guarded backup receipt. Use its actual path:
 
 Rollback checks every target and backup first, refuses later edits, and archives added files. It restores the Debloom application, not system packages installed through it. For multiple deployments, roll back from newest to oldest.
 
+[Performance measurements and limits](bench/REPORT.md) · See [0.1.1 changes](CHANGELOG.md) for the XDG and desktop path fixes.
+
 ## Development
 
 ```bash

@@ -1,20 +1,26 @@
 """Per-application appearance preference; never changes desktop settings."""
+
 import json
 import os
-from pathlib import Path
 import tempfile
+from pathlib import Path
+
+from paths import xdg_home
 
 MODES = ("system", "light", "dark")
 
 
 class AppearancePreferences:
     modes = MODES
-    default_mode = 'system'
-    filename = 'appearance.json'
+    default_mode = "system"
+    filename = "appearance.json"
 
     def __init__(self, path=None):
-        config_home = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
-        self.path = Path(path) if path else config_home / 'local-deb-installer' / self.filename
+        self.path = (
+            Path(path)
+            if path
+            else xdg_home("config") / "local-deb-installer" / self.filename
+        )
         self.mode = self.default_mode
         try:
             data = json.loads(self.path.read_text())
@@ -29,8 +35,9 @@ class AppearancePreferences:
         self.path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
         temporary = None
         try:
-            with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=self.path.parent,
-                                             delete=False) as stream:
+            with tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8", dir=self.path.parent, delete=False
+            ) as stream:
                 temporary = Path(stream.name)
                 os.fchmod(stream.fileno(), 0o600)
                 json.dump({"version": 1, "mode": mode}, stream)
