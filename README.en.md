@@ -58,7 +58,7 @@ cd debloom
 ~/.local/bin/debloom
 ```
 
-Search for **Debloom** in your application menu. Run `debloom` directly if `~/.local/bin` is on PATH. The installer registers user-local application files, a desktop entry and nine icon sizes; it does not change the desktop theme or default DEB handler. `deb-install-gui` remains compatible.
+Search for **Debloom** in your application menu. Run `debloom` directly if `~/.local/bin` is on PATH. The installer registers user-local application files, a desktop entry and nine icon sizes in hicolor. Generated themes such as DockNormalized and their caches remain managed by their owning tools. It does not change the desktop theme or default DEB handler. `deb-install-gui` remains compatible.
 
 ## Workflow
 
@@ -89,6 +89,8 @@ Installation prints a guarded backup receipt. Use its actual path:
 Rollback checks every target and backup first, refuses later edits, and archives added files. It restores the Debloom application, not system packages installed through it. For multiple deployments, roll back from newest to oldest.
 
 [Performance measurements and limits](bench/REPORT.md) · See [0.1.1 changes](CHANGELOG.md) for the XDG and desktop path fixes.
+
+0.1.2 makes detailed logs follow light appearance and preserves generated icon theme ownership. See the [changelog](CHANGELOG.md).
 
 ## Development
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Make expanded detailed logs follow the light appearance with a light background and dark text; dark and system appearance continue to follow their selected theme.
+- Install source icons only into hicolor and leave generated icon themes and their caches to their owning tools.
+- Add regression coverage for generated icon theme ownership.
+
 ## 0.1.1
 
 - Resolve empty and relative XDG config/data/state variables to their standard user defaults.

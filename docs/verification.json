@@ -1,6 +1,6 @@
 {
-  "version": "0.1.1",
-  "date": "2026-10-15",
+  "version": "0.1.2",
+  "date": "2026-10-16",
   "tests": {
     "appearance": 7,
     "gui_control": 6,
@@ -10,9 +10,10 @@
     "deployment": 6,
     "localization": 4,
     "updates": 5,
-    "total": 82,
+    "total": 84,
     "paths": 3,
-    "measurement": 3
+    "measurement": 3,
+    "icon_theme_ownership": 2
   },
   "environment": {
     "python": "Python 3.14.8",
@@ -29,8 +30,8 @@
     "localization.py": "311ce88b8e25e476224258fdcb906132ef23a4c37177b93cbe0e849c41edb1f7",
     "translations.json": "37bb9271979919751e056cfe88e7b46cee6c5b6931f02f618138ad597294ac50",
     "updates.py": "d797b9fb43d46b124b238dea3b4fb023545311e90340cc10f139a4e60bc9f17d",
-    "version.py": "2b86eaa7825d3acf4a1d8325b456e836578770282f47557bb8027007cc25610c",
-    "index.html": "3c2d00e9dd2e1714417856d8d4720d04b4707179be24e024d51872e044bb58da",
+    "version.py": "dc84f241f2a7fa1e0031d687939ac725a96265b0a76cb67b3b74109c0247f322",
+    "index.html": "e926a74effba42167ba96bc05a55f7da8c124dd23cb5a5ba5bade2f039438350",
     "local-deb-installer.svg": "edaf655f50d002c8953f96453c6a224747c39841b96114ed80109346cf2a444e"
   },
   "deployed_matches": {
@@ -55,16 +56,7 @@
     "hicolor/96": true,
     "hicolor/128": true,
     "hicolor/256": true,
-    "hicolor/512": true,
-    "DockNormalized/16": true,
-    "DockNormalized/24": true,
-    "DockNormalized/32": true,
-    "DockNormalized/48": true,
-    "DockNormalized/64": true,
-    "DockNormalized/96": true,
-    "DockNormalized/128": true,
-    "DockNormalized/256": true,
-    "DockNormalized/512": true
+    "hicolor/512": true
   },
   "preview_checks": {
     "1040": {
@@ -76,7 +68,7 @@
           "version": "1.0",
           "architecture": "all",
           "filename": "debloom-demo.deb",
-          "size": 492,
+          "size": 490,
           "description": "A local demo package for Debloom UI previews",
           "installedVersion": ""
         }
@@ -141,8 +133,8 @@
         },
         "system.png": {
           "selected": "system",
-          "effective": "dark",
-          "background": "rgb(11, 14, 20)",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
           "horizontal_overflow": false,
           "width": 1040,
           "height": 800,
@@ -180,8 +172,8 @@
         },
         "checked-system.png": {
           "selected": "system",
-          "effective": "dark",
-          "background": "rgb(11, 14, 20)",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
           "horizontal_overflow": false,
           "width": 1040,
           "height": 800,
@@ -279,7 +271,7 @@
           "version": "1.0",
           "architecture": "all",
           "filename": "debloom-demo.deb",
-          "size": 492,
+          "size": 490,
           "description": "A local demo package for Debloom UI previews",
           "installedVersion": ""
         }
@@ -344,8 +336,8 @@
         },
         "system.png": {
           "selected": "system",
-          "effective": "dark",
-          "background": "rgb(11, 14, 20)",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
           "horizontal_overflow": false,
           "width": 800,
           "height": 640,
@@ -383,8 +375,8 @@
         },
         "checked-system.png": {
           "selected": "system",
-          "effective": "dark",
-          "background": "rgb(11, 14, 20)",
+          "effective": "light",
+          "background": "rgb(248, 250, 252)",
           "horizontal_overflow": false,
           "width": 800,
           "height": 640,
@@ -474,60 +466,75 @@
       "real_install": false
     }
   },
-  "real_root_authorization": false,
-  "real_system_deb_installation": false,
+  "expanded_log_appearance": {
+    "light": {
+      "selected": "light",
+      "effective": "light",
+      "background": "rgb(248, 250, 252)",
+      "horizontal_overflow": false,
+      "width": 1040,
+      "height": 800,
+      "options": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "log": {
+        "background": "rgb(248, 250, 252)",
+        "foreground": "rgb(15, 23, 42)",
+        "open": true,
+        "hasText": true,
+        "hasScroll": true
+      }
+    },
+    "dark": {
+      "selected": "dark",
+      "effective": "dark",
+      "background": "rgb(11, 14, 20)",
+      "horizontal_overflow": false,
+      "width": 1040,
+      "height": 800,
+      "options": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "log": {
+        "background": "rgb(5, 7, 10)",
+        "foreground": "rgb(241, 245, 249)",
+        "open": true,
+        "hasText": true,
+        "hasScroll": true
+      }
+    },
+    "system": {
+      "selected": "system",
+      "effective": "light",
+      "background": "rgb(248, 250, 252)",
+      "horizontal_overflow": false,
+      "width": 1040,
+      "height": 800,
+      "options": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "log": {
+        "background": "rgb(248, 250, 252)",
+        "foreground": "rgb(15, 23, 42)",
+        "open": true,
+        "hasText": true,
+        "hasScroll": true
+      }
+    }
+  },
   "patch_checks": {
-    "xdg_empty_and_relative_fallback": true,
-    "gio_real_launch_and_exact_argv": true,
-    "separate_parent_and_child_cpu": true,
-    "startup_combined_imports_measured_directly": true,
-    "no_compiled_speedup_claim": true,
-    "system_preferences_preserved": true,
+    "light_log_uses_light_surface": true,
+    "dark_and_system_logs_follow_theme": true,
+    "generated_icon_themes_excluded_from_deployment_and_cache_refresh": true,
     "guard_unchanged": true,
     "backend_unchanged": true
   },
-  "installed_smoke": {
-    "width": 800,
-    "bridge_ready": true,
-    "phase": "checked",
-    "snapshots": 14,
-    "frontend_checks": {
-      "external_text_is_literal": true,
-      "no_html_injection": true,
-      "no_password_field": true,
-      "checked_install_enabled": true,
-      "size_is_readable": true,
-      "no_change_disables_install": true,
-      "busy_disables_actions": true,
-      "settings_remain_accessible_while_busy": true,
-      "invalid_package_allows_reselect": true,
-      "error_expands_log": true,
-      "log_is_bounded": true,
-      "log_can_clear": true
-    },
-    "locale_checks": {
-      "checked-en.png": {
-        "selected": "en",
-        "lang": "en",
-        "primary": "Confirm & install",
-        "title": "Debloom",
-        "horizontal_overflow": false
-      },
-      "checked-zh.png": {
-        "selected": "zh",
-        "lang": "zh-CN",
-        "primary": "确认并安装",
-        "title": "Debloom",
-        "horizontal_overflow": false
-      },
-      "settings-en.png": {
-        "selected": "en",
-        "lang": "en",
-        "primary": "Confirm & install",
-        "title": "Debloom",
-        "horizontal_overflow": false
-      }
-    },
-    "real_install": false
-  }
+  "real_root_authorization": false,
+  "real_system_deb_installation": false
 }

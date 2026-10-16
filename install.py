@@ -98,9 +98,9 @@ def build_files(home, data_home=None):
     desktop, _ = entry.to_data()
     files[data / "applications/local-deb-installer.desktop"] = (desktop.encode(), 0o644)
     icons = render_icons()
+    # Generated overlay themes are owned by their normalizer. Install only
+    # application source artwork; let the normalizer manage its own output.
     themes = ["hicolor"]
-    if (data / "icons/DockNormalized/index.theme").exists():
-        themes.append("DockNormalized")
     for theme in themes:
         for size, png in icons.items():
             files[
@@ -123,7 +123,7 @@ def refresh_caches(data):
                 "--ignore-theme-index",
                 str(data / "icons" / t),
             ]
-            for t in ["hicolor", "DockNormalized"]
+            for t in ["hicolor"]
             if (data / "icons" / t / "index.theme").exists()
         ],
     ):

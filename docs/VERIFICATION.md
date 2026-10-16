@@ -1,10 +1,10 @@
-# Debloom 0.1.1 verification
+# Debloom 0.1.2 verification
 
-Acceptance date: 2026-10-15. The machine-readable evidence is [verification.json](verification.json).
+Acceptance date: 2026-10-16. The machine-readable evidence is [verification.json](verification.json).
 
 ## Functional tests
 
-82 tests passed:
+84 tests passed:
 
 | Area | Tests | Scope |
 |---|---:|---|
@@ -18,6 +18,7 @@ Acceptance date: 2026-10-15. The machine-readable evidence is [verification.json
 | Update check | 5 | newer/current/older versions, invalid/offline/oversized responses, fixed release URL, independent task state |
 | XDG directories | 3 | unset/empty/relative/absolute values, preference persistence, real isolated installation targets |
 | Measurement evidence | 3 | child CPU attribution, failed-process rejection, unique outputs and overwrite refusal |
+| Icon theme ownership | 2 | source artwork goes to hicolor; generated themes and their caches remain untouched |
 
 Changed deployment, localization, update and rendering modules also pass Ruff checks. The existing installation guard source retains its pre-redesign SHA-256.
 
@@ -29,9 +30,13 @@ All three appearance choices and both languages were exercised through actual se
 
 The published PNGs contain an inert demo package and simulated installation plan. No success or root authorization screenshot is presented as a real package installation.
 
-The eleven application runtime files match their deployed copies byte-for-byte. All nine PNG sizes in hicolor and DockNormalized match freshly rendered SVG pixels. Desktop entry validation passes.
+The eleven application runtime files match their deployed copies byte-for-byte. All nine PNG sizes in hicolor match freshly rendered SVG pixels. Generated themes such as DockNormalized are not deployment targets. Desktop entry validation passes.
 
 ## Patch acceptance
+
+Expanded logs were checked in native WebKit under light, dark and system appearance. Light mode renders a light background with dark text; dark mode retains its dark background with light text. The log remains expanded, populated and scrollable through the changes. The installer now writes and refreshes hicolor only, leaving generated icon themes to their owning tools.
+
+Expanded log previews: [light](assets/log-light.png), [dark](assets/log-dark.png). These previews use demo log text, without running a real package installation.
 
 The XDG resolver applies one rule to config, data and state: empty or relative environment values use standard HOME defaults. Isolated installation tests verify every target stays beneath the temporary user's home, no files appear in the working directory, and preferences retain private permissions.
 
